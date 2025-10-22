@@ -11,7 +11,7 @@ export default {
           type: "set_rotation",
           inputs: {
             SERVO_ID: {
-              block: {
+              shadow: {
                 type: "math_number",
                 fields: {
                   NUM: 0,
@@ -19,7 +19,7 @@ export default {
               },
             },
             ANGLE: {
-              block: {
+              shadow: {
                 type: "math_number",
                 fields: {
                   NUM: 90,
