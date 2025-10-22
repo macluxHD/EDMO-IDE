@@ -15,6 +15,9 @@ function App() {
     setJavascriptCode(code);
   }
 
+  const runCode = () => {
+    eval(javascriptCode);
+  };
 
   return (
     <>
@@ -39,6 +42,7 @@ function App() {
         value={javascriptCode}
         readOnly
       ></textarea>
+      <button onClick={runCode}>Run</button>
     </>
   );
 }
