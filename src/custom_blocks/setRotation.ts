@@ -1,5 +1,6 @@
 import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
+import { setArmAngle } from "../components/simulationControls";
 
 // Sets rotation of servo x to angle y
 Blockly.Blocks["set_rotation"] = {
@@ -8,7 +9,6 @@ Blockly.Blocks["set_rotation"] = {
     this.setTooltip(
       "Sets the rotation of the specified servo to the given angle."
     );
-    this.setHelpUrl("");
     this.setInputsInline(true);
     this.appendValueInput("SERVO_ID")
       .setCheck("Number")
@@ -31,6 +31,6 @@ javascriptGenerator.forBlock["set_rotation"] = function(block) {
 };
 
 export function setServoRotation(servoId: number | string, angle: number) {
-    // TODO: Actually implement something
     console.log(`setServoRotation called with id=${servoId}, angle=${angle}`);
+    setArmAngle({ side: servoId === 0 ? "left" : "right", degrees: angle, duration: 0.6 });
 }

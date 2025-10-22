@@ -28,6 +28,20 @@ export default {
             },
           },
         },
+        {
+          kind: "block",
+          type: "sleep",
+          inputs: {
+            SECONDS: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 1,
+                },
+              },
+            },
+          },
+        },
       ],
     },
     {
