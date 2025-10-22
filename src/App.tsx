@@ -1,8 +1,10 @@
 import "./App.css";
 import { useState } from "react";
 import { BlocklyWorkspace } from "@kuband/react-blockly";
-import { javascriptGenerator } from 'blockly/javascript';
+import { javascriptGenerator } from "blockly/javascript";
 import * as Blockly from "blockly";
+
+import {setServoRotation} from "./custom_blocks/setRotation";
 
 import Toolbox from "./toolbox";
 
@@ -16,7 +18,13 @@ function App() {
   }
 
   const runCode = () => {
-    eval(javascriptCode);
+    const evalContext = {
+      setServoRotation,
+    };
+    const evalArgs = Object.keys(evalContext);
+    const evalVals = Object.values(evalContext);
+    const evalFunction = new Function(...evalArgs, javascriptCode);
+    evalFunction(...evalVals);
   };
 
   return (
