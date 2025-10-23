@@ -136,7 +136,7 @@ function Scene() {
 
 function Simulation() {
   return (
-    <Canvas>
+    <Canvas camera={{position: [0,5,5]}}>
       <Scene />
     </Canvas>
   );

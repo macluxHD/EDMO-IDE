@@ -11,8 +11,13 @@ import Toolbox from "./toolbox";
 
 import Simulation from "./components/simulation";
 
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 function App() {
-  const [xml, setXml] = useState<string>(localStorage.getItem("blocklyWorkspaceXml") as string | "");
+  const [xml, setXml] = useState<string>(
+    localStorage.getItem("blocklyWorkspaceXml") as string | ""
+  );
   const [javascriptCode, setJavascriptCode] = useState("");
   const abortControllerRef = useRef<AbortController | null>(null);
   const [version, setVersion] = useState(0);
@@ -40,17 +45,19 @@ function App() {
     try {
       const evalContext = {
         setServoRotation,
-        sleep: sleep(signal)
+        sleep: sleep(signal),
       };
       const evalArgs = Object.keys(evalContext);
       const evalVals = Object.values(evalContext);
-      const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+      const AsyncFunction = Object.getPrototypeOf(
+        async function () {}
+      ).constructor;
       const evalFunction = new AsyncFunction(...evalArgs, javascriptCode);
 
       await evalFunction(...evalVals);
       console.log("Execution completed");
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof Error && error.name === "AbortError") {
         console.log("Execution aborted");
       } else {
         console.error("Execution error:", error);
@@ -84,7 +91,7 @@ function App() {
       if (typeof text === "string") {
         setXml(text);
         localStorage.setItem("blocklyWorkspaceXml", text);
-        setVersion(v => v + 1);
+        setVersion((v) => v + 1);
       }
     };
     reader.readAsText(file);
@@ -92,32 +99,12 @@ function App() {
 
   return (
     <>
-      <BlocklyWorkspace
-        key={version}
-        toolboxConfiguration={Toolbox}
-        initialXml={xml}
-        className="fill-height"
-        workspaceConfiguration={{
-          grid: {
-            spacing: 20,
-            length: 3,
-            colour: "#df2323ff",
-            snap: true,
-          },
-        }}
-        onWorkspaceChange={workspaceDidChange}
-        onXmlChange={setXml}
-      />
-      <textarea
-        id="code"
-        style={{ height: "200px", width: "400px" }}
-        value={javascriptCode}
-        readOnly
-      ></textarea>
-      <div>
+      <div className="controls">
         <button onClick={runCode}>Run</button>
         <button onClick={handleSaveFile}>Save as file</button>
-        <button onClick={() => fileInputRef.current?.click()}>Load from file</button>
+        <button onClick={() => fileInputRef.current?.click()}>
+          Load from file
+        </button>
         <input
           type="file"
           accept=".xml"
@@ -126,8 +113,43 @@ function App() {
           onChange={handleLoadFile}
         />
       </div>
-      <div style={{ height: 1000 }}>
-        <Simulation />
+      <div className="container">
+        <div className="editor">
+          <BlocklyWorkspace
+            key={version}
+            toolboxConfiguration={Toolbox}
+            initialXml={xml}
+            className="workspace"
+            workspaceConfiguration={{
+              grid: {
+                spacing: 20,
+                length: 3,
+                colour: "#df2323ff",
+                snap: true,
+              },
+            }}
+            onWorkspaceChange={workspaceDidChange}
+            onXmlChange={setXml}
+          />
+        </div>
+        <div className="simulation">
+          <Simulation />
+        </div>
+        <div className="output">
+          <SyntaxHighlighter
+            language="javascript"
+            style={oneDark}
+            customStyle={{
+              borderRadius: "8px",
+              padding: "12px",
+              height: "100%",
+              overflowY: "auto",
+            }}
+            showLineNumbers
+          >
+            {javascriptCode}
+          </SyntaxHighlighter>
+        </div>
       </div>
     </>
   );
