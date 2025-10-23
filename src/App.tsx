@@ -1,10 +1,10 @@
 import "./App.css";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BlocklyWorkspace } from "@kuband/react-blockly";
 import { javascriptGenerator } from "blockly/javascript";
 import * as Blockly from "blockly";
 
-import {setServoRotation} from "./custom_blocks/setRotation";
+import { setServoRotation } from "./custom_blocks/setRotation";
 import { sleep } from "./custom_blocks/sleep";
 
 import Toolbox from "./toolbox";
@@ -12,7 +12,7 @@ import Toolbox from "./toolbox";
 import Simulation from "./components/simulation";
 
 function App() {
-  const [xml, setXml] = useState<string>("");
+  const [xml, setXml] = useState<string>(localStorage.getItem("blocklyWorkspaceXml") as string | "");
   const [javascriptCode, setJavascriptCode] = useState("");
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -20,6 +20,10 @@ function App() {
     const code = javascriptGenerator.workspaceToCode(workspace);
     setJavascriptCode(code);
   }
+
+  useEffect(() => {
+    localStorage.setItem("blocklyWorkspaceXml", xml);
+  }, [xml]);
 
   // TODO: Add some way to be able to cancel infinite loops that do not have any sleep calls
   const runCode = async () => {
