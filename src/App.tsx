@@ -15,6 +15,7 @@ function App() {
   const [xml, setXml] = useState<string>(localStorage.getItem("blocklyWorkspaceXml") as string | "");
   const [javascriptCode, setJavascriptCode] = useState("");
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [version, setVersion] = useState(0);
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
     const code = javascriptGenerator.workspaceToCode(workspace);
@@ -43,7 +44,7 @@ function App() {
       };
       const evalArgs = Object.keys(evalContext);
       const evalVals = Object.values(evalContext);
-      const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+      const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
       const evalFunction = new AsyncFunction(...evalArgs, javascriptCode);
 
       await evalFunction(...evalVals);
@@ -62,9 +63,37 @@ function App() {
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSaveFile = () => {
+    const blob = new Blob([xml], { type: "text/xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "workspace.xml";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleLoadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result;
+      if (typeof text === "string") {
+        setXml(text);
+        localStorage.setItem("blocklyWorkspaceXml", text);
+        setVersion(v => v + 1);
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <>
       <BlocklyWorkspace
+        key={version}
         toolboxConfiguration={Toolbox}
         initialXml={xml}
         className="fill-height"
@@ -85,7 +114,18 @@ function App() {
         value={javascriptCode}
         readOnly
       ></textarea>
-      <button onClick={runCode}>Run</button>
+      <div>
+        <button onClick={runCode}>Run</button>
+        <button onClick={handleSaveFile}>Save as file</button>
+        <button onClick={() => fileInputRef.current?.click()}>Load from file</button>
+        <input
+          type="file"
+          accept=".xml"
+          style={{ display: "none" }}
+          ref={fileInputRef}
+          onChange={handleLoadFile}
+        />
+      </div>
       <div style={{ height: 1000 }}>
         <Simulation />
       </div>
