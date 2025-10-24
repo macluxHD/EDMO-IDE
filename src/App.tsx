@@ -95,6 +95,7 @@ function App() {
       }
     };
     reader.readAsText(file);
+    event.target.value = "";
   };
 
   return (
