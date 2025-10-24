@@ -25,3 +25,10 @@ npm run dev
 ```
 
 To access it, open the link printed in the console in your browser.
+
+## Acknowledgements  
+This project uses STL files from the educational modular robot platform **EDMO**, developed by the DKE SwarmLab at Maastricht University. Please acknowledge their work if you build upon these materials.
+
+For more information about EDMO, visit [EDMO project page](https://www.maastrichtuniversity.nl/edmo)
+
+Thank you to the DKE SwarmLab at Maastricht University for providing these free to use materials.
