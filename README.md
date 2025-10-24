@@ -3,9 +3,9 @@ This repo is part of Project 3-1 (BCS3300) at Maastricht Univeristy
 
 You can try it out at: https://macluxhd.github.io/EDMO-IDE/
 
-## Build
+## Run locally
 
-To build it locally you need git and [Nodejs](https://nodejs.org/en/download)
+To run it locally you need git and [Nodejs](https://nodejs.org/en/download)
 
 1. Clone the repo
 ```shell
