@@ -8,10 +8,7 @@ export function useCodeRunner() {
   // TODO: Add some way to be able to cancel infinite loops that do not have any sleep calls
   const runCode = async (javascriptCode: string) => {
     // Abort any previous execution
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      console.log("Previous execution stopped");
-    }
+    stopCode();
 
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
@@ -44,5 +41,13 @@ export function useCodeRunner() {
     }
   };
 
-  return { runCode };
+  const stopCode = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      console.log("Execution stopped");
+    }
+  };
+
+  return { runCode, stopCode };
 }
