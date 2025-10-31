@@ -25,16 +25,16 @@ function App() {
 
   return (
     <>
-      <BlocklyEditor
-        xml={xml}
-        version={version}
-        onWorkspaceChange={workspaceDidChange}
-        onXmlChange={setXml}
-        onRunCode={handleRunCode}
-        onSaveFile={handleSaveFile}
-        onLoadFile={handleLoadFile}
-      />
       <div className="container">
+        <BlocklyEditor
+          xml={xml}
+          version={version}
+          onWorkspaceChange={workspaceDidChange}
+          onXmlChange={setXml}
+          onRunCode={handleRunCode}
+          onSaveFile={handleSaveFile}
+          onLoadFile={handleLoadFile}
+        />
         <div className="simulation">
           <Simulation />
         </div>
