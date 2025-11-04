@@ -8,6 +8,7 @@ import CodeWindow from "./components/codeWindow";
 import Simulation from "./components/simulation";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
+import { processAsyncFunctions } from "./utils/processAsyncFunctions";
 
 function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
@@ -15,7 +16,8 @@ function App() {
   const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
-    const code = javascriptGenerator.workspaceToCode(workspace);
+    let code = javascriptGenerator.workspaceToCode(workspace);
+    code = processAsyncFunctions(code);
     setJavascriptCode(code);
   }
 
