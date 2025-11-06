@@ -11,7 +11,6 @@ export function processAsyncFunctions(code: string): string {
   const asyncFunctions = new Set<string>();
   
   let match;
-  const functionBodies = new Map<string, { start: number; end: number }>();
   
   while ((match = functionRegex.exec(code)) !== null) {
     const funcName = match[2];
@@ -34,7 +33,6 @@ export function processAsyncFunctions(code: string): string {
     }
     
     const functionBody = code.substring(match.index + match[0].length, endPos);
-    functionBodies.set(funcName, { start: startPos, end: endPos + 1 });
     
     if (/\bawait\s+/.test(functionBody)) {
       asyncFunctions.add(funcName);
@@ -48,6 +46,7 @@ export function processAsyncFunctions(code: string): string {
     );
   });
   
+  let changed = false;
   asyncFunctions.forEach(funcName => {
     code = code.replace(
       new RegExp(`(?<!await\\s+)\\b${funcName}\\s*\\(`, 'g'),
@@ -56,10 +55,15 @@ export function processAsyncFunctions(code: string): string {
         if (/function\s*$/.test(beforeMatch)) {
           return match;
         }
+        changed = true;
         return 'await ' + match;
       }
     );
   });
+
+  if (changed) {
+    code = processAsyncFunctions(code);
+  }
   
   return code;
 }
