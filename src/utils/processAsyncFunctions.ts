@@ -17,17 +17,16 @@ export function processAsyncFunctions(code: string): string {
     const funcName = match[2];
     const startPos = match.index + match[0].indexOf('function');
     
-    let braceCount = 0;
-    let inFunction = false;
+    // start at 1 because the regex match already consumed the opening brace
+    let braceCount = 1;
     let endPos = startPos;
     
     for (let i = match.index + match[0].length; i < code.length; i++) {
       if (code[i] === '{') {
         braceCount++;
-        inFunction = true;
       } else if (code[i] === '}') {
         braceCount--;
-        if (inFunction && braceCount === 0) {
+        if (braceCount === 0) {
           endPos = i;
           break;
         }
