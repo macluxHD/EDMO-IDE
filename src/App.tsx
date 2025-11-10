@@ -2,19 +2,22 @@ import "./App.css";
 import { useState } from "react";
 import { javascriptGenerator } from "blockly/javascript";
 import * as Blockly from "blockly";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 import BlocklyEditor from "./components/blocklyEditor";
 import CodeWindow from "./components/codeWindow";
 import Simulation from "./components/simulation";
+import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import { processAsyncFunctions } from "./utils/processAsyncFunctions";
 
 function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
-  const { runCode } = useCodeRunner();
+  const { 
+    runCode, 
+    infiniteLoopState,
+    handleCloseWarning,
+  } = useCodeRunner();
   const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
@@ -44,17 +47,9 @@ function App() {
         </div>
         <CodeWindow code={javascriptCode} />
       </div>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
+      <GlobalOverlays
+        infiniteLoopState={infiniteLoopState}
+        onCloseInfiniteLoopWarning={handleCloseWarning}
       />
     </>
   );
