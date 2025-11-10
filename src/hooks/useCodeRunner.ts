@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { toast } from "react-toastify";
 import { setServoRotation } from "../custom_blocks/setRotation";
 import { sleep } from "../custom_blocks/sleep";
 
@@ -26,11 +27,15 @@ export function useCodeRunner() {
       const evalFunction = new AsyncFunction(...evalArgs, javascriptCode);
 
       await evalFunction(...evalVals);
-      console.log("Execution completed");
+      toast.success("Code execution completed successfully");
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        console.log("Execution aborted");
+        toast.info("Code execution stopped");
       } else {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        toast.error(`Execution error: ${errorMessage}`, {
+          autoClose: 10000,
+        });
         console.error("Execution error:", error);
       }
     } finally {
@@ -45,7 +50,6 @@ export function useCodeRunner() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
-      console.log("Execution stopped");
     }
   };
 
