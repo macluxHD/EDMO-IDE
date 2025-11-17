@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { setServoRotation } from "../custom_blocks/setRotation";
 import { sleep } from "../custom_blocks/sleep";
+import "../custom_blocks/start";
 
 export function useCodeRunner() {
   const abortControllerRef = useRef<AbortController | null>(null);

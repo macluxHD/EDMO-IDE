@@ -26,7 +26,14 @@ function App() {
   const sideRef = useRef<HTMLDivElement>(null);
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
-    let code = javascriptGenerator.workspaceToCode(workspace);
+    const allBlocks = workspace.getAllBlocks(false);
+    const startBlock = allBlocks.find(block => block.type === 'start');
+    
+    if (!startBlock) return;
+
+    const startBlockCode = javascriptGenerator.blockToCode(startBlock);
+    let code = Array.isArray(startBlockCode) ? startBlockCode[0] : startBlockCode;
+    
     code = processAsyncFunctions(code);
     setJavascriptCode(code);
   }
