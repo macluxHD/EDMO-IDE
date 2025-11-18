@@ -1,5 +1,4 @@
-import "./App.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { javascriptGenerator } from "blockly/javascript";
 import * as Blockly from "blockly";
 
@@ -13,26 +12,78 @@ import { processAsyncFunctions } from "./utils/processAsyncFunctions";
 
 function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
-  const { 
-    runCode, 
+  const {
+    runCode,
     infiniteLoopState,
     handleCloseWarning,
   } = useCodeRunner();
   const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
+
+  // Horizontal split (Blockly vs right column)
+  const [editorFrac, setEditorFrac] = useState<number>(() => {
+    const v = Number(localStorage.getItem("edmo_editor_frac"));
+    return Number.isFinite(v) && v > 0.15 && v < 0.85 ? v : 0.62;
+  });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Vertical split inside right column (Simulation vs Code)
+  const [simFrac, setSimFrac] = useState(0.6);
+  const sideRef = useRef<HTMLDivElement>(null);
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
     let code = javascriptGenerator.workspaceToCode(workspace);
     code = processAsyncFunctions(code);
     setJavascriptCode(code);
   }
+  const handleRunCode = () => runCode(javascriptCode);
 
-  const handleRunCode = () => {
-    runCode(javascriptCode);
+  // Column drag
+  const startColDrag = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const onMove = (ev: MouseEvent) => {
+      if (!containerRef.current) return;
+      const r = containerRef.current.getBoundingClientRect();
+      const x = Math.min(Math.max(ev.clientX - r.left, 160), r.width - 260);
+      const f = x / r.width;
+      const clamped = Math.min(0.85, Math.max(0.15, f));
+      setEditorFrac(clamped);
+      localStorage.setItem("edmo_editor_frac", String(clamped));
+    };
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
+  // Row drag
+  const startRowDrag = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const onMove = (ev: MouseEvent) => {
+      if (!sideRef.current) return;
+      const r = sideRef.current.getBoundingClientRect();
+      const y = Math.min(Math.max(ev.clientY - r.top, 40), r.height - 40);
+      const f = y / r.height;
+      setSimFrac(Math.min(0.9, Math.max(0.1, f)));
+    };
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
   };
 
   return (
     <>
-      <div className="container">
+      <div
+        className="container"
+        ref={containerRef}
+        style={{
+          gridTemplateColumns: `${editorFrac * 100}% 8px ${(1 - editorFrac) * 100}%`,
+        }}
+      >
         <BlocklyEditor
           xml={xml}
           version={version}
@@ -42,10 +93,26 @@ function App() {
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
         />
-        <div className="simulation">
-          <Simulation />
+
+        <div className="col-resizer" onMouseDown={startColDrag} />
+
+        <div
+          className="side-panels"
+          ref={sideRef}
+          style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
+        >
+          <section className="panel">
+            <header className="panel-header">Simulation</header>
+            <div className="panel-body simulation"><Simulation /></div>
+          </section>
+
+          <div className="row-resizer" onMouseDown={startRowDrag} />
+
+          <section className="panel">
+            <header className="panel-header">Generated code</header>
+            <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
+          </section>
         </div>
-        <CodeWindow code={javascriptCode} />
       </div>
       <GlobalOverlays
         infiniteLoopState={infiniteLoopState}

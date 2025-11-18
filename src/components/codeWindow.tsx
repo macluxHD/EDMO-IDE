@@ -8,10 +8,11 @@ export default function CodeWindow({ code }: { code: string }) {
         language="javascript"
         style={oneDark}
         customStyle={{
-          borderRadius: "8px",
-          padding: "12px",
+          borderRadius: 0,
+          padding: 0,          // no padding
           height: "100%",
           overflowY: "auto",
+          margin: 0            // flush with container
         }}
         showLineNumbers
       >
