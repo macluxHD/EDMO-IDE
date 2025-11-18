@@ -5,13 +5,18 @@ import * as Blockly from "blockly";
 import BlocklyEditor from "./components/blocklyEditor";
 import CodeWindow from "./components/codeWindow";
 import Simulation from "./components/simulation";
+import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import { processAsyncFunctions } from "./utils/processAsyncFunctions";
 
 function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
-  const { runCode } = useCodeRunner();
+  const {
+    runCode,
+    infiniteLoopState,
+    handleCloseWarning,
+  } = useCodeRunner();
   const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
 
   // Horizontal split (Blockly vs right column)
@@ -71,43 +76,49 @@ function App() {
   };
 
   return (
-    <div
-      className="container"
-      ref={containerRef}
-      style={{
-        gridTemplateColumns: `${editorFrac * 100}% 8px ${(1 - editorFrac) * 100}%`,
-      }}
-    >
-      <BlocklyEditor
-        xml={xml}
-        version={version}
-        onWorkspaceChange={workspaceDidChange}
-        onXmlChange={setXml}
-        onRunCode={handleRunCode}
-        onSaveFile={handleSaveFile}
-        onLoadFile={handleLoadFile}
-      />
-
-      <div className="col-resizer" onMouseDown={startColDrag} />
-
+    <>
       <div
-        className="side-panels"
-        ref={sideRef}
-        style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
+        className="container"
+        ref={containerRef}
+        style={{
+          gridTemplateColumns: `${editorFrac * 100}% 8px ${(1 - editorFrac) * 100}%`,
+        }}
       >
-        <section className="panel">
-          <header className="panel-header">Simulation</header>
-          <div className="panel-body simulation"><Simulation /></div>
-        </section>
+        <BlocklyEditor
+          xml={xml}
+          version={version}
+          onWorkspaceChange={workspaceDidChange}
+          onXmlChange={setXml}
+          onRunCode={handleRunCode}
+          onSaveFile={handleSaveFile}
+          onLoadFile={handleLoadFile}
+        />
 
-        <div className="row-resizer" onMouseDown={startRowDrag} />
+        <div className="col-resizer" onMouseDown={startColDrag} />
 
-        <section className="panel">
-          <header className="panel-header">Generated code</header>
-          <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
-        </section>
+        <div
+          className="side-panels"
+          ref={sideRef}
+          style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
+        >
+          <section className="panel">
+            <header className="panel-header">Simulation</header>
+            <div className="panel-body simulation"><Simulation /></div>
+          </section>
+
+          <div className="row-resizer" onMouseDown={startRowDrag} />
+
+          <section className="panel">
+            <header className="panel-header">Generated code</header>
+            <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
+          </section>
+        </div>
       </div>
-    </div>
+      <GlobalOverlays
+        infiniteLoopState={infiniteLoopState}
+        onCloseInfiniteLoopWarning={handleCloseWarning}
+      />
+    </>
   );
 }
 
