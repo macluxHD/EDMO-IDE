@@ -80,8 +80,9 @@ export function useCodeRunner() {
   };
 
   const stopCode = () => {
-    interpreters.clear();
+    if (interpreters.size === 0) return;
     toast.info("Halting code execution...");
+    interpreters.clear();
   };
 
   return {
