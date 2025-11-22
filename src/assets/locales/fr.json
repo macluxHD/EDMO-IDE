@@ -1,0 +1,43 @@
+{
+    "run": "Exécuter",
+    "save": {
+        "button": "Sauvgarder",
+        "success": "Sauvgardé avec succès",
+        "error": "Échec pendant l'enregistrement: {{errorMessage}}"
+    },
+    "load": {
+        "button": "Ouvrir",
+        "success": "Overture avec succès",
+        "error": "Échec pendant l'ouverture du fichier: {{errorMessage}}"
+    },
+    "simulation": {
+        "title": "Simulation"
+    },
+    "codeWindow": {
+        "title": "Code généré"
+    },
+    "infiniteLoop": {
+        "iterations": "Votre code a exécuté {{count}} itérations et a été automatiquement arrêté.",
+        "timeout": "Votre code a tourné trop longtemps et a été automatiquement arrêté.",
+        "title": "Boucle infinie détectée",
+        "hint": "Cela arrive lorsque vous avez une boucle qui ne se termine jamais comme ici:",
+        "closeButton": "OK",
+        "warning": "L'exécution du code a été arrêtée en raison d'une boucle infinie"
+    },
+    "setRotation": {
+        "tooltip": "Définit l' angle du servo indiqué à l'angle donné.",
+        "block1": "défini l'angle du servo",
+        "block2": "à",
+        "block3": "degrés"
+    },
+    "sleep": {
+        "tooltip": "Met le programme en pause pendant le nombre de secondes spécifié.",
+        "block1": "Pause pendant",
+        "block2": "seconde(s)"
+    },
+    "codeRunner": {
+        "success": "L'exécution du code s'est terminée avec succès",
+        "error": "Une erreur s'est produite lors de l'exécution du code",
+        "halting": "Arrêt du code..."
+    }
+}

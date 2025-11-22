@@ -8,8 +8,10 @@ import Simulation from "./components/simulation";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
+import { useTranslation } from "react-i18next";
 
 function App() {
+  const { t } = useTranslation();
   const [javascriptCode, setJavascriptCode] = useState("");
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
   const {
@@ -107,14 +109,14 @@ function App() {
           style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
         >
           <section className="panel">
-            <header className="panel-header">Simulation</header>
+            <header className="panel-header">{t("simulation.title")}</header>
             <div className="panel-body simulation"><Simulation /></div>
           </section>
 
           <div className="row-resizer" onMouseDown={startRowDrag} />
 
           <section className="panel">
-            <header className="panel-header">Generated code</header>
+            <header className="panel-header">{t("codeWindow.title")}</header>
             <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
           </section>
         </div>

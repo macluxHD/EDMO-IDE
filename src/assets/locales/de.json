@@ -1,0 +1,43 @@
+{
+    "run": "Ausführen",
+    "save": {
+        "button": "Speichern",
+        "success": "Erfolgreich gespeichert",
+        "error": "Ein Problem ist während dem speichern aufgetreten: {{errorMessage}}"
+    },
+    "load": {
+        "button": "Öffnen",
+        "success": "Projekt erfolgreich geöffnet",
+        "error": "Ein Problem ist während dem öffnen aufgetreten: {{errorMessage}}"
+    },
+    "simulation": {
+        "title": "Simulation"
+    },
+    "codeWindow": {
+        "title": "Generierter Code"
+    },
+    "infiniteLoop": {
+        "iterations": "Der Code wurde nach {{count}} Iterationen gestoppt.",
+        "timeout": "Die Codeausführung dauerte zu lange und wurde gestoppt.",
+        "title": "Endlosschleife erkannt",
+        "hint": "Dies passiert, wenn man Schleifen wie die folgende hat:",
+        "closeButton": "OK",
+        "warning": "Die Codeausführung wurde aufgrund einer Endlosschleife gestoppt"
+    },
+    "setRotation": {
+        "tooltip": "Stellt den Winkel des angegebenen Servos ein",
+        "block1": "Setze den Winkel des Servo",
+        "block2": "auf",
+        "block3": "Grad"
+    },
+    "sleep": {
+        "tooltip": "Pausiert die Codeausführung für die angegebenen Sekunden.",
+        "block1": "Pausiere für",
+        "block2": "Sekunde(n)"
+    },
+    "codeRunner": {
+        "success": "Der Code wurde erfolgreich ausgeführt",
+        "error": "Ein Fehler ist während der Codeausführung aufgetreten",
+        "halting": "Codeausführung wird angehalten..."
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "run": "Run",
+    "save": {
+        "button": "Save as file",
+        "success": "Workspace saved successfully",
+        "error": "Failed to save file: {{errorMessage}}"
+    },
+    "load": {
+        "button": "Load file",
+        "success": "Workspace loaded successfully",
+        "error": "Failed to load file: {{errorMessage}}"
+    },
+    "simulation": {
+        "title": "Simulation"
+    },
+    "codeWindow": {
+        "title": "Generated Code"
+    },
+    "infiniteLoop": {
+        "iterations": "Your code executed {{count}} loop iterations and was automatically stopped.",
+        "timeout": "Your code ran for too long and was automatically stopped.",
+        "title": "Infinite Loop Detected",
+        "hint": "This happens when you have a loop that never ends:",
+        "closeButton": "OK",
+        "warning": "Code execution was stopped due to infinite loop"
+    },
+    "setRotation": {
+        "tooltip": "Sets the rotation of the specified servo to the given angle.",
+        "block1": "set rotation of servo",
+        "block2": "to",
+        "block3": "degrees"
+    },
+    "sleep": {
+        "tooltip": "Pauses the program for the specified number of seconds.",
+        "block1": "Sleep for",
+        "block2": "second(s)"
+    },
+    "codeRunner": {
+        "success": "Code execution completed successfully",
+        "error": "An error occurred during code execution",
+        "halting": "Halting code execution..."
+    }
+}

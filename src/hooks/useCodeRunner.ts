@@ -10,6 +10,7 @@ import {
   initInterpreterInfiniteLoopTrap, 
   INFINITE_LOOP_ERROR 
 } from "./useInfiniteLoopDetection";
+import { useTranslation } from "react-i18next";
 
 const interpreters = new Map<string, Interpreter | null>();
 
@@ -38,6 +39,7 @@ function initApi(interpreter: Interpreter, globalObject: unknown) {
 }
 
 export function useCodeRunner() {
+  const { t } = useTranslation();
   const {
     infiniteLoopState,
     handleInfiniteLoopDetection,
@@ -63,7 +65,7 @@ export function useCodeRunner() {
         // Try again later.
         window.setTimeout(runner, 10);
       } else {
-        toast.success("Code execution completed successfully");
+        toast.success(t("codeRunner.success"));
       }
     };
 
@@ -74,14 +76,14 @@ export function useCodeRunner() {
         handleInfiniteLoopDetection("iterations");
       } else {
         console.error("Code execution error:", error);
-        toast.error("An error occurred during code execution");
+        toast.error(t("codeRunner.error"));
       }
     }
   };
 
   const stopCode = () => {
     interpreters.clear();
-    toast.info("Halting code execution...");
+    toast.info(t("codeRunner.halting"));
   };
 
   return {
