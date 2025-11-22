@@ -1,5 +1,6 @@
 import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
+import Interpreter from "js-interpreter";
 
 Blockly.Blocks["sleep"] = {
   init: function () {
@@ -18,19 +19,18 @@ Blockly.Blocks["sleep"] = {
 
 javascriptGenerator.forBlock['sleep'] = function(block) {
   const seconds = javascriptGenerator.valueToCode(block, 'SECONDS', 0) || '1';
-  const code = `await sleep(${seconds});\n`;
+  const code = `sleep(${seconds});\n`;
   return code;
 };
 
-export const sleep = (signal: AbortSignal) => {
-  return (seconds: number) => {
-    if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(resolve, seconds * 1000);
-      signal.addEventListener('abort', () => {
-        clearTimeout(timeout);
-        reject(new DOMException('Aborted', 'AbortError'));
-      });
-    });
-  };
-};
+export function initInterpreterSleep(interpreter: Interpreter, globalObject: unknown) {
+  // Ensure function name does not conflict with variable names.
+  javascriptGenerator.addReservedWords('sleep');
+
+  const wrapper = interpreter.createAsyncFunction(
+    function(seconds: number, callback: () => void) {
+      setTimeout(callback, seconds * 1000);
+    }
+  )
+  interpreter.setProperty(globalObject, 'sleep', wrapper);
+}

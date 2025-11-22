@@ -5,16 +5,17 @@ import * as Blockly from "blockly";
 import BlocklyEditor from "./components/blocklyEditor";
 import CodeWindow from "./components/codeWindow";
 import Simulation from "./components/simulation";
-import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
-import { processAsyncFunctions } from "./utils/processAsyncFunctions";
+import GlobalOverlays from "./components/overlays/GlobalOverlays";
 
 function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
+  const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
   const {
     runCode,
     infiniteLoopState,
+    stopCode,
     handleCloseWarning,
   } = useCodeRunner();
   const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
@@ -31,11 +32,15 @@ function App() {
   const sideRef = useRef<HTMLDivElement>(null);
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
-    let code = javascriptGenerator.workspaceToCode(workspace);
-    code = processAsyncFunctions(code);
-    setJavascriptCode(code);
+    setWorkspace(workspace);
+    setJavascriptCode(javascriptGenerator.workspaceToCode(workspace));
   }
-  const handleRunCode = () => runCode(javascriptCode);
+  const handleRunCode = () => {
+    if (workspace) {
+      stopCode();
+      runCode(workspace);
+    }
+  };
 
   // Column drag
   const startColDrag = (e: React.MouseEvent<HTMLDivElement>) => {
