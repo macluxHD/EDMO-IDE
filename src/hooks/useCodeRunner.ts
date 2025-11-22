@@ -45,6 +45,7 @@ export function useCodeRunner() {
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
     const code = javascriptGenerator.workspaceToCode(workspace);
+    javascriptGenerator.INFINITE_LOOP_TRAP = null;
 
     const interpreterId = uuidv4();
     interpreters.set(interpreterId, new Interpreter(code, initApi));
