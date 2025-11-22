@@ -4,11 +4,11 @@ import { initInterpreterSleep } from "../custom_blocks/sleep";
 import { initInterpreterSetRotation } from "../custom_blocks/setRotation";
 import { javascriptGenerator } from "blockly/javascript";
 import * as Blockly from "blockly";
-import { v4 as uuidv4 } from 'uuid';
-import { 
-  useInfiniteLoopDetection, 
-  initInterpreterInfiniteLoopTrap, 
-  INFINITE_LOOP_ERROR 
+import { v4 as uuidv4 } from "uuid";
+import {
+  useInfiniteLoopDetection,
+  initInterpreterInfiniteLoopTrap,
+  INFINITE_LOOP_ERROR,
 } from "./useInfiniteLoopDetection";
 
 const interpreters = new Map<string, Interpreter | null>();
@@ -38,11 +38,8 @@ function initApi(interpreter: Interpreter, globalObject: unknown) {
 }
 
 export function useCodeRunner() {
-  const {
-    infiniteLoopState,
-    handleInfiniteLoopDetection,
-    handleCloseWarning,
-  } = useInfiniteLoopDetection();
+  const { infiniteLoopState, handleInfiniteLoopDetection, handleCloseWarning } =
+    useInfiniteLoopDetection();
 
   const runCode = async (workspace: Blockly.Workspace) => {
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
@@ -64,6 +61,7 @@ export function useCodeRunner() {
         window.setTimeout(runner, 10);
       } else {
         toast.success("Code execution completed successfully");
+        interpreters.delete(interpreterId);
       }
     };
 
@@ -76,6 +74,7 @@ export function useCodeRunner() {
         console.error("Code execution error:", error);
         toast.error("An error occurred during code execution");
       }
+      interpreters.delete(interpreterId);
     }
   };
 
