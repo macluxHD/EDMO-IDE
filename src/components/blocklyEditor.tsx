@@ -14,6 +14,7 @@ interface BlocklyEditorProps {
   onRunCode: () => void;
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onReloadWorkspace: () => void;
 }
 
 export default function BlocklyEditor({
@@ -24,6 +25,7 @@ export default function BlocklyEditor({
   onRunCode,
   onSaveFile,
   onLoadFile,
+  onReloadWorkspace,
 }: BlocklyEditorProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +88,7 @@ export default function BlocklyEditor({
             onChange={onLoadFile}
           />
         </div>
-        <LanguageSelector />
+        <LanguageSelector onReloadWorkspace={onReloadWorkspace} />
       </div>
 
       {/* Blockly canvas */}

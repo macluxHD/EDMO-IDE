@@ -6,12 +6,18 @@ const languages = [
   { code: "de", name: "Deutsch", flag: "🇩🇪" },
 ];
 
-function LanguageSelector() {
+interface LanguageSelectorProps {
+  onReloadWorkspace: () => void;
+}
+
+function LanguageSelector({ onReloadWorkspace }: LanguageSelectorProps) {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
     localStorage.setItem("language", langCode);
+
+    onReloadWorkspace();
   };
 
   return (

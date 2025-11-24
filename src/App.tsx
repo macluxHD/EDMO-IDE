@@ -9,6 +9,7 @@ import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useTranslation } from "react-i18next";
+import { useWorkspaceReload } from "./hooks/useWorkspaceReload";
 
 function App() {
   const { t } = useTranslation();
@@ -20,7 +21,8 @@ function App() {
     stopCode,
     handleCloseWarning,
   } = useCodeRunner();
-  const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
+  const { xml, setXml, handleSaveFile, handleLoadFile } = useSaving();
+  const { version, reloadWorkspace } = useWorkspaceReload(); 
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -99,6 +101,7 @@ function App() {
           onRunCode={handleRunCode}
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
+          onReloadWorkspace={reloadWorkspace}
         />
 
         <div className="col-resizer" onMouseDown={startColDrag} />

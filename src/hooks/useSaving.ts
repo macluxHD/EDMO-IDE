@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useWorkspaceReload } from "./useWorkspaceReload";
 
 export function useSaving() {
   const { t } = useTranslation();
   const [xml, setXml] = useState<string>(
     localStorage.getItem("blocklyWorkspaceXml") || ""
   );
-  const [version, setVersion] = useState(0);
+  const { reloadWorkspace } = useWorkspaceReload();
 
   useEffect(() => {
     localStorage.setItem("blocklyWorkspaceXml", xml);
@@ -42,7 +43,7 @@ export function useSaving() {
         if (typeof text === "string") {
           setXml(text);
           localStorage.setItem("blocklyWorkspaceXml", text);
-          setVersion((v) => v + 1);
+          reloadWorkspace();
           toast.success(t("load.success"));
         } else {
           throw new Error("Invalid file content");
@@ -66,7 +67,6 @@ export function useSaving() {
   return {
     xml,
     setXml,
-    version,
     handleSaveFile,
     handleLoadFile,
   };
