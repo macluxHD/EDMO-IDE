@@ -1,5 +1,6 @@
 import type Interpreter from "js-interpreter";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 interface InfiniteLoopState {
@@ -12,6 +13,7 @@ export const LOOP_TRAP_LIMIT = 1000;
 export const INFINITE_LOOP_ERROR = "Infinite loop.";
 
 export function useInfiniteLoopDetection() {
+  const { t } = useTranslation();
   const [infiniteLoopState, setInfiniteLoopState] = useState<InfiniteLoopState>({
     isWarningOpen: false,
     reason: "iterations",
@@ -32,7 +34,7 @@ export function useInfiniteLoopDetection() {
       isWarningOpen: false,
       reason: "iterations",
     });
-    toast.warning("Code execution was stopped due to infinite loop");
+    toast.warning(t("infiniteLoop.warning"));
   };
 
   return {

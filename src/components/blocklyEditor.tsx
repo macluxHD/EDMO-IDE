@@ -3,6 +3,8 @@ import { BlocklyWorkspace } from "@kuband/react-blockly";
 import * as Blockly from "blockly";
 import Toolbox from "../toolbox";
 import logoUrl from "../assets/edmo-logo.png";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "./LanguageSelector";
 
 interface BlocklyEditorProps {
   xml: string;
@@ -12,6 +14,7 @@ interface BlocklyEditorProps {
   onRunCode: () => void;
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onReloadWorkspace: () => void;
 }
 
 export default function BlocklyEditor({
@@ -22,12 +25,15 @@ export default function BlocklyEditor({
   onRunCode,
   onSaveFile,
   onLoadFile,
+  onReloadWorkspace,
 }: BlocklyEditorProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Custom theme
   const edmoTheme = useMemo(() => {
-    const opts: any = {
+    const opts = {
+      name: "edmoTheme",
       base: Blockly.Themes.Classic,
       componentStyles: {
         workspaceBackgroundColour: "#f6f7f9",
@@ -69,10 +75,10 @@ export default function BlocklyEditor({
       <div className="editor-toolbar">
         <img src={logoUrl} alt="EDMO Logo" className="editor-logo" />
         <div className="toolbar-buttons">
-          <button onClick={onRunCode}>Run</button>
-          <button onClick={onSaveFile}>Save as file</button>
+          <button onClick={onRunCode}>{t('run')}</button>
+          <button onClick={onSaveFile}>{t('save.button')}</button>
           <button onClick={() => fileInputRef.current?.click()}>
-            Load from file
+            {t('load.button')}
           </button>
           <input
             type="file"
@@ -82,6 +88,7 @@ export default function BlocklyEditor({
             onChange={onLoadFile}
           />
         </div>
+        <LanguageSelector onReloadWorkspace={onReloadWorkspace} />
       </div>
 
       {/* Blockly canvas */}

@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useWorkspaceReload } from "./useWorkspaceReload";
 
 export function useSaving() {
+  const { t } = useTranslation();
   const [xml, setXml] = useState<string>(
     localStorage.getItem("blocklyWorkspaceXml") || ""
   );
-  const [version, setVersion] = useState(0);
+  const { reloadWorkspace } = useWorkspaceReload();
 
   useEffect(() => {
     localStorage.setItem("blocklyWorkspaceXml", xml);
@@ -20,10 +23,10 @@ export function useSaving() {
       a.download = "workspace.xml";
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("Workspace saved successfully");
+      toast.success(t("save.success"));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      toast.error(`Failed to save file: ${errorMessage}`);
+      toast.error(t(`save.error`, { errorMessage }));
       console.error("Save error:", error);
     }
   };
@@ -40,20 +43,20 @@ export function useSaving() {
         if (typeof text === "string") {
           setXml(text);
           localStorage.setItem("blocklyWorkspaceXml", text);
-          setVersion((v) => v + 1);
-          toast.success("Workspace loaded successfully");
+          reloadWorkspace();
+          toast.success(t("load.success"));
         } else {
           throw new Error("Invalid file content");
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        toast.error(`Failed to load file: ${errorMessage}`);
+        toast.error(t("load.error", { errorMessage }));
         console.error("Load error:", error);
       }
     };
     
     reader.onerror = () => {
-      toast.error("Failed to read file");
+      toast.error(t("load.error", { errorMessage: "Failed to read file" }));
       console.error("FileReader error:", reader.error);
     };
     
@@ -64,7 +67,6 @@ export function useSaving() {
   return {
     xml,
     setXml,
-    version,
     handleSaveFile,
     handleLoadFile,
   };
