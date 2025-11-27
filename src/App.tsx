@@ -7,11 +7,17 @@ import CodeWindow from "./components/codeWindow";
 import Simulation from "./components/simulation";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
-import { processAsyncFunctions } from "./utils/processAsyncFunctions";
+import GlobalOverlays from "./components/overlays/GlobalOverlays";
 
 function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
-  const { runCode } = useCodeRunner();
+  const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
+  const {
+    runCode,
+    infiniteLoopState,
+    stopCode,
+    handleCloseWarning,
+  } = useCodeRunner();
   const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
 
   // Horizontal split (Blockly vs right column)
@@ -26,18 +32,15 @@ function App() {
   const sideRef = useRef<HTMLDivElement>(null);
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
-    const allBlocks = workspace.getAllBlocks(false);
-    const startBlock = allBlocks.find(block => block.type === 'start');
-    
-    if (!startBlock) return;
-
-    const startBlockCode = javascriptGenerator.blockToCode(startBlock);
-    let code = Array.isArray(startBlockCode) ? startBlockCode[0] : startBlockCode;
-    
-    code = processAsyncFunctions(code);
-    setJavascriptCode(code);
+    setWorkspace(workspace);
+    setJavascriptCode(javascriptGenerator.workspaceToCode(workspace));
   }
-  const handleRunCode = () => runCode(javascriptCode);
+  const handleRunCode = () => {
+    if (workspace) {
+      stopCode();
+      runCode(workspace);
+    }
+  };
 
   // Column drag
   const startColDrag = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -78,43 +81,49 @@ function App() {
   };
 
   return (
-    <div
-      className="container"
-      ref={containerRef}
-      style={{
-        gridTemplateColumns: `${editorFrac * 100}% 8px ${(1 - editorFrac) * 100}%`,
-      }}
-    >
-      <BlocklyEditor
-        xml={xml}
-        version={version}
-        onWorkspaceChange={workspaceDidChange}
-        onXmlChange={setXml}
-        onRunCode={handleRunCode}
-        onSaveFile={handleSaveFile}
-        onLoadFile={handleLoadFile}
-      />
-
-      <div className="col-resizer" onMouseDown={startColDrag} />
-
+    <>
       <div
-        className="side-panels"
-        ref={sideRef}
-        style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
+        className="container"
+        ref={containerRef}
+        style={{
+          gridTemplateColumns: `${editorFrac * 100}% 8px ${(1 - editorFrac) * 100}%`,
+        }}
       >
-        <section className="panel">
-          <header className="panel-header">Simulation</header>
-          <div className="panel-body simulation"><Simulation /></div>
-        </section>
+        <BlocklyEditor
+          xml={xml}
+          version={version}
+          onWorkspaceChange={workspaceDidChange}
+          onXmlChange={setXml}
+          onRunCode={handleRunCode}
+          onSaveFile={handleSaveFile}
+          onLoadFile={handleLoadFile}
+        />
 
-        <div className="row-resizer" onMouseDown={startRowDrag} />
+        <div className="col-resizer" onMouseDown={startColDrag} />
 
-        <section className="panel">
-          <header className="panel-header">Generated code</header>
-          <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
-        </section>
+        <div
+          className="side-panels"
+          ref={sideRef}
+          style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
+        >
+          <section className="panel">
+            <header className="panel-header">Simulation</header>
+            <div className="panel-body simulation"><Simulation /></div>
+          </section>
+
+          <div className="row-resizer" onMouseDown={startRowDrag} />
+
+          <section className="panel">
+            <header className="panel-header">Generated code</header>
+            <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
+          </section>
+        </div>
       </div>
-    </div>
+      <GlobalOverlays
+        infiniteLoopState={infiniteLoopState}
+        onCloseInfiniteLoopWarning={handleCloseWarning}
+      />
+    </>
   );
 }
 

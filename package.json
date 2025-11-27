@@ -13,10 +13,13 @@
     "@kuband/react-blockly": "^10.0.1",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
+    "js-interpreter": "^6.0.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-syntax-highlighter": "git+https://github.com/UncleJart/react-syntax-highlighter.git#aea2ad57526443240bbd321aabb298f7a1d01b68",
-    "three": "^0.180.0"
+    "react-toastify": "^11.0.5",
+    "three": "^0.180.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
@@ -24,6 +27,7 @@
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/react-toastify": "^4.0.2",
     "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.36.0",

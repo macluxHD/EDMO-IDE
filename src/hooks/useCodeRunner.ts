@@ -1,54 +1,94 @@
-import { useRef } from "react";
-import { setServoRotation } from "../custom_blocks/setRotation";
-import { sleep } from "../custom_blocks/sleep";
-import "../custom_blocks/start";
+import { toast } from "react-toastify";
+import Interpreter from "js-interpreter";
+import { initInterpreterSleep } from "../custom_blocks/sleep";
+import { initInterpreterSetRotation } from "../custom_blocks/setRotation";
+import { javascriptGenerator } from "blockly/javascript";
+import * as Blockly from "blockly";
+import { v4 as uuidv4 } from "uuid";
+import {
+  useInfiniteLoopDetection,
+  initInterpreterInfiniteLoopTrap,
+  INFINITE_LOOP_ERROR,
+} from "./useInfiniteLoopDetection";
+
+const interpreters = new Map<string, Interpreter | null>();
+
+function initApi(interpreter: Interpreter, globalObject: unknown) {
+  // Add an API function for the alert() block.
+  interpreter.setProperty(
+    globalObject,
+    "alert",
+    interpreter.createNativeFunction(function (text: string) {
+      return alert(arguments.length ? text : "");
+    })
+  );
+
+  // Add an API function for the prompt() block.
+  interpreter.setProperty(
+    globalObject,
+    "prompt",
+    interpreter.createNativeFunction(function (text: string) {
+      return prompt(text);
+    })
+  );
+
+  initInterpreterSleep(interpreter, globalObject);
+  initInterpreterSetRotation(interpreter, globalObject);
+  initInterpreterInfiniteLoopTrap(interpreter, globalObject);
+}
 
 export function useCodeRunner() {
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const { infiniteLoopState, handleInfiniteLoopDetection, handleCloseWarning } =
+    useInfiniteLoopDetection();
 
-  // TODO: Add some way to be able to cancel infinite loops that do not have any sleep calls
-  const runCode = async (javascriptCode: string) => {
-    // Abort any previous execution
-    stopCode();
+  const runCode = async (workspace: Blockly.Workspace) => {
+    javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
+    const code = javascriptGenerator.workspaceToCode(workspace);
+    javascriptGenerator.INFINITE_LOOP_TRAP = null;
+
+    const interpreterId = uuidv4();
+    interpreters.set(interpreterId, new Interpreter(code, initApi));
+
+    const runner = () => {
+      const interpreter = interpreters.get(interpreterId);
+      if (!interpreter) return;
+
+      const hasMore = interpreter.run();
+
+      if (hasMore) {
+        // Execution is currently blocked by some async call.
+        // Try again later.
+        window.setTimeout(runner, 10);
+      } else {
+        toast.success("Code execution completed successfully");
+        interpreters.delete(interpreterId);
+      }
+    };
 
     try {
-      const evalContext = {
-        setServoRotation,
-        sleep: sleep(signal),
-      };
-      const evalArgs = Object.keys(evalContext);
-      const evalVals = Object.values(evalContext);
-      const AsyncFunction = Object.getPrototypeOf(
-        async function () {}
-      ).constructor;
-      const evalFunction = new AsyncFunction(...evalArgs, javascriptCode);
-
-      await evalFunction(...evalVals);
-      console.log("Execution completed");
+      runner();
     } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        console.log("Execution aborted");
+      if (error === INFINITE_LOOP_ERROR) {
+        handleInfiniteLoopDetection("iterations");
       } else {
-        console.error("Execution error:", error);
+        console.error("Code execution error:", error);
+        toast.error("An error occurred during code execution");
       }
-    } finally {
-      // Clean up if this execution completes normally
-      if (abortControllerRef.current?.signal === signal) {
-        abortControllerRef.current = null;
-      }
+      interpreters.delete(interpreterId);
     }
   };
 
   const stopCode = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-      console.log("Execution stopped");
-    }
+    if (interpreters.size === 0) return;
+    toast.info("Halting code execution...");
+    interpreters.clear();
   };
 
-  return { runCode, stopCode };
+  return {
+    runCode,
+    stopCode,
+    infiniteLoopState,
+    handleCloseWarning,
+  };
 }
