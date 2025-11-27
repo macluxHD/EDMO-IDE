@@ -10,6 +10,7 @@ import {
   initInterpreterInfiniteLoopTrap,
   INFINITE_LOOP_ERROR,
 } from "./useInfiniteLoopDetection";
+import "../custom_blocks/start";
 
 const interpreters = new Map<string, Interpreter | null>();
 
@@ -37,45 +38,58 @@ function initApi(interpreter: Interpreter, globalObject: unknown) {
   initInterpreterInfiniteLoopTrap(interpreter, globalObject);
 }
 
+function runCode(code: string, handleInfiniteLoopDetection: (reason: "iterations" | "timeout") => void) {
+  const interpreterId = uuidv4();
+  interpreters.set(interpreterId, new Interpreter(code, initApi));
+
+  const runner = () => {
+    const interpreter = interpreters.get(interpreterId);
+    if (!interpreter) return;
+
+    const hasMore = interpreter.run();
+
+    if (hasMore) {
+      // Execution is currently blocked by some async call.
+      // Try again later.
+      window.setTimeout(runner, 10);
+    } else {
+      toast.success("Code execution completed successfully");
+      interpreters.delete(interpreterId);
+    }
+  };
+
+  try {
+    runner();
+  } catch (error) {
+    if (error === INFINITE_LOOP_ERROR) {
+      handleInfiniteLoopDetection("iterations");
+    } else {
+      console.error("Code execution error:", error);
+      toast.error("An error occurred during code execution");
+    }
+    interpreters.delete(interpreterId);
+  }
+}
+
 export function useCodeRunner() {
   const { infiniteLoopState, handleInfiniteLoopDetection, handleCloseWarning } =
     useInfiniteLoopDetection();
 
-  const runCode = async (workspace: Blockly.Workspace) => {
-    javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
+  const runCodes = async (workspace: Blockly.Workspace) => {
+    const allBlocks = workspace.getAllBlocks(false);
+    const startBlock = allBlocks.filter((block) => block.type === "start");
 
-    const code = javascriptGenerator.workspaceToCode(workspace);
+    if (startBlock.length === 0) return;
+
+    javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
+    const codes = startBlock.map((block) => {
+      const code = javascriptGenerator.blockToCode(block);
+      return Array.isArray(code) ? code[0] : code;
+    });
     javascriptGenerator.INFINITE_LOOP_TRAP = null;
 
-    const interpreterId = uuidv4();
-    interpreters.set(interpreterId, new Interpreter(code, initApi));
-
-    const runner = () => {
-      const interpreter = interpreters.get(interpreterId);
-      if (!interpreter) return;
-
-      const hasMore = interpreter.run();
-
-      if (hasMore) {
-        // Execution is currently blocked by some async call.
-        // Try again later.
-        window.setTimeout(runner, 10);
-      } else {
-        toast.success("Code execution completed successfully");
-        interpreters.delete(interpreterId);
-      }
-    };
-
-    try {
-      runner();
-    } catch (error) {
-      if (error === INFINITE_LOOP_ERROR) {
-        handleInfiniteLoopDetection("iterations");
-      } else {
-        console.error("Code execution error:", error);
-        toast.error("An error occurred during code execution");
-      }
-      interpreters.delete(interpreterId);
+    for (const code of codes) {
+      runCode(code, handleInfiniteLoopDetection);
     }
   };
 
@@ -86,7 +100,7 @@ export function useCodeRunner() {
   };
 
   return {
-    runCode,
+    runCodes,
     stopCode,
     infiniteLoopState,
     handleCloseWarning,

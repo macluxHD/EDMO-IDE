@@ -13,7 +13,7 @@ function App() {
   const [javascriptCode, setJavascriptCode] = useState("");
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
   const {
-    runCode,
+    runCodes,
     infiniteLoopState,
     stopCode,
     handleCloseWarning,
@@ -38,7 +38,7 @@ function App() {
   const handleRunCode = () => {
     if (workspace) {
       stopCode();
-      runCode(workspace);
+      runCodes(workspace);
     }
   };
 
