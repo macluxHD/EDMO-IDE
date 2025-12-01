@@ -13,7 +13,7 @@ import {
 
 const interpreters = new Map<string, Interpreter | null>();
 
-function initApi(interpreter: Interpreter, globalObject: unknown) {
+function initApi(interpreter: Interpreter, globalObject: unknown, workspace: Blockly.Workspace) {
   // Add an API function for the alert() block.
   interpreter.setProperty(
     globalObject,
@@ -32,6 +32,13 @@ function initApi(interpreter: Interpreter, globalObject: unknown) {
     })
   );
 
+  // Add an API function for highlighting blocks.
+  interpreter.setProperty(globalObject, 'highlightBlock',
+    interpreter.createNativeFunction(function (id) {
+      return (workspace as Blockly.WorkspaceSvg).highlightBlock(id);
+  }));
+
+
   initInterpreterSleep(interpreter, globalObject);
   initInterpreterSetRotation(interpreter, globalObject);
   initInterpreterInfiniteLoopTrap(interpreter, globalObject);
@@ -44,11 +51,19 @@ export function useCodeRunner() {
   const runCode = async (workspace: Blockly.Workspace) => {
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
+    javascriptGenerator.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
+    javascriptGenerator.addReservedWords('highlightBlock');
+
     const code = javascriptGenerator.workspaceToCode(workspace);
     javascriptGenerator.INFINITE_LOOP_TRAP = null;
 
     const interpreterId = uuidv4();
-    interpreters.set(interpreterId, new Interpreter(code, initApi));
+    interpreters.set(
+      interpreterId,
+      new Interpreter(code, (interpreter, globalObject) =>
+        initApi(interpreter, globalObject, workspace)
+      )
+    );
 
     const runner = () => {
       const interpreter = interpreters.get(interpreterId);
