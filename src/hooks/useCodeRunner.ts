@@ -56,6 +56,7 @@ export function useCodeRunner() {
 
     const code = javascriptGenerator.workspaceToCode(workspace);
     javascriptGenerator.INFINITE_LOOP_TRAP = null;
+    javascriptGenerator.STATEMENT_PREFIX = null;
 
     const interpreterId = uuidv4();
     interpreters.set(
