@@ -37,7 +37,7 @@ function App() {
   }
   const handleRunCode = () => {
     if (workspace) {
-      stopCode();
+      stopCode(workspace);
       runCode(workspace);
     }
   };
