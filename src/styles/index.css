@@ -203,6 +203,49 @@ html, body, #root {
 }
 
 /***************
+  LANGUAGE SELECTOR
+***************/
+.language-selector {
+  position: absolute;
+  right: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.language-select {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f5f5f5' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: background-color 0.2s;
+}
+
+.language-select:hover {
+  background-color: var(--accent);
+}
+
+.language-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.language-select option {
+  background: var(--panel);
+  color: var(--text);
+  padding: 8px;
+}
+
+/***************
   RESPONSIVE
 ***************/
 @media (max-width: 1200px) {
