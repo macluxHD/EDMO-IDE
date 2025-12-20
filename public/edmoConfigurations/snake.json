@@ -1,0 +1,58 @@
+{
+    "id": "snake",
+    "name": "Snake",
+    "parts": [
+        {
+            "type": "body",
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ]
+        },
+        {
+            "type": "body",
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "type": "arm",
+            "position": [
+                -3.29,
+                0,
+                0
+            ],
+            "rotation": [
+                3.141592653589793,
+                0,
+                3.141592653589793
+            ]
+        },
+        {
+            "type": "arm",
+            "position": [
+                3.29,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ]
+        }
+    ]
+}
