@@ -77,6 +77,7 @@ export function useCodeRunner() {
         // Try again later.
         window.setTimeout(runner, 10);
       } else {
+        (workspace as Blockly.WorkspaceSvg).highlightBlock(null);
         toast.success("Code execution completed successfully");
         interpreters.delete(interpreterId);
       }
@@ -95,10 +96,11 @@ export function useCodeRunner() {
     }
   };
 
-  const stopCode = () => {
+  const stopCode = (workspace: Blockly.Workspace) => {
     if (interpreters.size === 0) return;
     toast.info("Halting code execution...");
     interpreters.clear();
+    (workspace as Blockly.WorkspaceSvg).highlightBlock(null);
   };
 
   return {
