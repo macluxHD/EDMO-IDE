@@ -10,6 +10,7 @@ import {
   initInterpreterInfiniteLoopTrap,
   INFINITE_LOOP_ERROR,
 } from "./useInfiniteLoopDetection";
+import { initInterpreterSetOscillator } from "../custom_blocks/setOscillator";
 
 const interpreters = new Map<string, Interpreter | null>();
 
@@ -42,6 +43,7 @@ function initApi(interpreter: Interpreter, globalObject: unknown, workspace: Blo
   initInterpreterSleep(interpreter, globalObject);
   initInterpreterSetRotation(interpreter, globalObject);
   initInterpreterInfiniteLoopTrap(interpreter, globalObject);
+  initInterpreterSetOscillator(interpreter, globalObject);
 }
 
 export function useCodeRunner() {

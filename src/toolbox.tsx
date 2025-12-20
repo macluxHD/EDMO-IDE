@@ -42,6 +42,60 @@ export default {
             },
           },
         },
+        {
+          kind: "block",
+          type: "set_oscillator",
+          inputs: {
+            SERVO_ID: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 0,
+                },
+              },
+            },
+            FREQUENCY: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 1,
+                },
+              },
+            },
+            AMPLITUDE: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 45,
+                },
+              },
+            },
+            OFFSET: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 0,
+                },
+              },
+            },
+            PHASE_SHIFT: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 0,
+                },
+              },
+            },
+            PHASE: {
+              shadow: {
+                type: "math_number",
+                fields: {
+                  NUM: 0,
+                },
+              },
+            },
+          },
+        },
       ],
     },
     {
