@@ -1,4 +1,5 @@
 [
     "snake.json",
-    "robot_arm.json"
+    "robot_arm.json",
+    "biped.json"
 ]
