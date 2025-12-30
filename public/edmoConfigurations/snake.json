@@ -4,8 +4,9 @@
     "parts": [
         {
             "type": "body",
+            "isMovable": false,
             "position": [
-                0,
+                -3.29,
                 0,
                 0
             ],
@@ -17,8 +18,9 @@
         },
         {
             "type": "body",
+            "isMovable": false,
             "position": [
-                0,
+                3.29,
                 0,
                 0
             ],
@@ -30,6 +32,7 @@
         },
         {
             "type": "arm",
+            "isMovable": true,
             "position": [
                 -3.29,
                 0,
@@ -43,6 +46,7 @@
         },
         {
             "type": "arm",
+            "isMovable": true,
             "position": [
                 3.29,
                 0,

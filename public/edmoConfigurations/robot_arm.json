@@ -1,0 +1,62 @@
+{
+    "id": "robot_arm",
+    "name": "Robot Arm",
+    "parts": [
+        {
+            "type": "arm",
+            "isMovable": false,
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                -1.570796327
+            ]
+        },
+        {
+            "type": "body",
+            "isMovable": true,
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                -1.570796327
+            ],
+            "child": {
+                "type": "arm",
+                "isMovable": false,
+                "position": [
+                    -6.58,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "child": {
+                    "type": "body",
+                    "isMovable": true,
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            }
+        }
+    ]
+}
