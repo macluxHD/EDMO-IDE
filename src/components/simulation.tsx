@@ -231,9 +231,20 @@ function Scene({ parts }: SceneProps) {
   );
 }
 
-function Simulation() {
+interface SimulationProps {
+  configId: string;
+  onConfigChange: (configId: string) => void;
+}
+
+function Simulation({ configId, onConfigChange }: SimulationProps) {
   const [configurations, setConfigurations] = useState<EdmoConfig[]>([]);
-  const [selectedConfigId, setSelectedConfigId] = useState<string>("");
+  const configIdRef = React.useRef(configId);
+  const onConfigChangeRef = React.useRef(onConfigChange);
+
+  React.useEffect(() => {
+    configIdRef.current = configId;
+    onConfigChangeRef.current = onConfigChange;
+  }, [configId, onConfigChange]);
 
   useEffect(() => {
     const loadConfigurations = async () => {
@@ -250,8 +261,8 @@ function Simulation() {
         );
 
         setConfigurations(configs);
-        if (configs.length > 0) {
-          setSelectedConfigId(configs[0].id);
+        if (configs.length > 0 && configIdRef.current === "") {
+          onConfigChangeRef.current(configs[0].id);
         }
       } catch {
         setConfigurations([]);
@@ -260,7 +271,7 @@ function Simulation() {
     loadConfigurations();
   }, []);
 
-  const selectedConfig = configurations.find((c) => c.id === selectedConfigId);
+  const selectedConfig = configurations.find((c) => c.id === configId);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -288,8 +299,8 @@ function Simulation() {
         </label>
         <select
           id="config-select"
-          value={selectedConfigId}
-          onChange={(e) => setSelectedConfigId(e.target.value)}
+          value={configId}
+          onChange={(e) => onConfigChange(e.target.value)}
           style={{
             background: "var(--panel-2)",
             color: "var(--text)",
