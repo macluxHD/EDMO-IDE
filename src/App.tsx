@@ -5,6 +5,7 @@ import * as Blockly from "blockly";
 import BlocklyEditor from "./components/blocklyEditor";
 import CodeWindow from "./components/codeWindow";
 import Simulation from "./components/simulation";
+import { RobotConnection } from "./components/RobotConnection";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
@@ -161,6 +162,7 @@ function App() {
           </section>
         </div>
       </div>
+      <RobotConnection />
       <GlobalOverlays
         infiniteLoopState={infiniteLoopState}
         onCloseInfiniteLoopWarning={handleCloseWarning}

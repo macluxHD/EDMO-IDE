@@ -1,3 +1,5 @@
+import { robotWebSocket } from "../services/websocketService";
+
 export type SetArmAngleFunction = (options?: {
   index: number;
   degrees: number;
@@ -11,6 +13,14 @@ export const setArmAngle: SetArmAngleFunction = (options) => {
     setArmAngleRef(options);
   } else {
     console.warn("setArmAngle called before Simulation component mounted");
+  }
+
+  if (options) {
+    robotWebSocket.sendCommand({
+      type: "setArmAngle",
+      index: options.index,
+      degrees: options.degrees,
+    });
   }
 };
 
