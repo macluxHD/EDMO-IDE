@@ -41,6 +41,9 @@ function App() {
     const allBlocks = workspace.getAllBlocks(false);
     const startBlocks = allBlocks.filter((block) => block.type === "start");
 
+    if (!javascriptGenerator.isInitialized) javascriptGenerator.init(workspace);
+
+    let newCode: string | string[];
     if (startBlocks.length > 1) {
       // Generate code for each start block separately
       const codes = startBlocks
@@ -50,11 +53,18 @@ function App() {
         })
         .filter((code) => code.trim().length > 0);
 
-      setJavascriptCode(codes.length > 0 ? codes : "");
+      newCode = codes.length > 0 ? codes : "";
     } else {
       // Single or no start block - use default behavior
-      setJavascriptCode(javascriptGenerator.workspaceToCode(workspace));
+      newCode = javascriptGenerator.workspaceToCode(workspace);
     }
+
+    // Only update if the code has actually changed
+    setJavascriptCode((prevCode) => {
+      const prevStr = Array.isArray(prevCode) ? prevCode.join("\n") : prevCode;
+      const newStr = Array.isArray(newCode) ? newCode.join("\n") : newCode;
+      return prevStr === newStr ? prevCode : newCode;
+    });
   }
   const handleRunCode = () => {
     if (workspace) {
