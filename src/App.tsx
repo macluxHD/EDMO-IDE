@@ -10,15 +10,19 @@ import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
 
 function App() {
-  const [javascriptCode, setJavascriptCode] = useState("");
+  const [javascriptCode, setJavascriptCode] = useState<string | string[]>("");
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
+  const { runCodes, infiniteLoopState, stopCode, handleCloseWarning } =
+    useCodeRunner();
   const {
-    runCode,
-    infiniteLoopState,
-    stopCode,
-    handleCloseWarning,
-  } = useCodeRunner();
-  const { xml, setXml, robotConfigId, setRobotConfigId, version, handleSaveFile, handleLoadFile } = useSaving();
+    xml,
+    setXml,
+    robotConfigId,
+    setRobotConfigId,
+    version,
+    handleSaveFile,
+    handleLoadFile,
+  } = useSaving();
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -33,12 +37,39 @@ function App() {
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
     setWorkspace(workspace);
-    setJavascriptCode(javascriptGenerator.workspaceToCode(workspace));
+
+    const allBlocks = workspace.getAllBlocks(false);
+    const startBlocks = allBlocks.filter((block) => block.type === "start");
+
+    if (!javascriptGenerator.isInitialized) javascriptGenerator.init(workspace);
+
+    let newCode: string | string[];
+    if (startBlocks.length > 1) {
+      // Generate code for each start block separately
+      const codes = startBlocks
+        .map((block) => {
+          const code = javascriptGenerator.blockToCode(block);
+          return Array.isArray(code) ? code[0] : code;
+        })
+        .filter((code) => code.trim().length > 0);
+
+      newCode = codes.length > 0 ? codes : "";
+    } else {
+      // Single or no start block - use default behavior
+      newCode = javascriptGenerator.workspaceToCode(workspace);
+    }
+
+    // Only update if the code has actually changed
+    setJavascriptCode((prevCode) => {
+      const prevStr = Array.isArray(prevCode) ? prevCode.join("\n") : prevCode;
+      const newStr = Array.isArray(newCode) ? newCode.join("\n") : newCode;
+      return prevStr === newStr ? prevCode : newCode;
+    });
   }
   const handleRunCode = () => {
     if (workspace) {
       stopCode(workspace);
-      runCode(workspace);
+      runCodes(workspace);
     }
   };
 
@@ -86,7 +117,9 @@ function App() {
         className="container"
         ref={containerRef}
         style={{
-          gridTemplateColumns: `${editorFrac * 100}% 8px ${(1 - editorFrac) * 100}%`,
+          gridTemplateColumns: `${editorFrac * 100}% 8px ${
+            (1 - editorFrac) * 100
+          }%`,
         }}
       >
         <BlocklyEditor
@@ -104,18 +137,27 @@ function App() {
         <div
           className="side-panels"
           ref={sideRef}
-          style={{ gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%` }}
+          style={{
+            gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%`,
+          }}
         >
           <section className="panel">
             <header className="panel-header">Simulation</header>
-            <div className="panel-body simulation"><Simulation configId={robotConfigId} onConfigChange={setRobotConfigId} /></div>
+            <div className="panel-body simulation">
+              <Simulation
+                configId={robotConfigId}
+                onConfigChange={setRobotConfigId}
+              />
+            </div>
           </section>
 
           <div className="row-resizer" onMouseDown={startRowDrag} />
 
           <section className="panel">
             <header className="panel-header">Generated code</header>
-            <div className="panel-body code"><CodeWindow code={javascriptCode} /></div>
+            <div className="panel-body code">
+              <CodeWindow code={javascriptCode} />
+            </div>
           </section>
         </div>
       </div>
