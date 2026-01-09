@@ -27,27 +27,31 @@ interface MeshProps {
   children?: React.ReactNode;
 }
 
-const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(({ position, rotation, children, ...rest }, ref) => {
-  const armSrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Arm.obj");
-  const arm = useMemo(() => armSrc.clone(true), [armSrc]);
-  return (
-    <group ref={ref} position={position} rotation={rotation}>
-      <primitive {...rest} object={arm} />
-      {children}
-    </group>
-  );
-});
+const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
+  ({ position, rotation, children, ...rest }, ref) => {
+    const armSrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Arm.obj");
+    const arm = useMemo(() => armSrc.clone(true), [armSrc]);
+    return (
+      <group ref={ref} position={position} rotation={rotation}>
+        <primitive {...rest} object={arm} />
+        {children}
+      </group>
+    );
+  }
+);
 
-const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(({ position, rotation, children, ...rest }, ref) => {
-  const bodySrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Body.obj");
-  const body = useMemo(() => bodySrc.clone(true), [bodySrc]);
-  return (
-    <group ref={ref} position={position} rotation={rotation}>
-      <primitive {...rest} object={body} />
-      {children}
-    </group>
-  );
-});
+const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(
+  ({ position, rotation, children, ...rest }, ref) => {
+    const bodySrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Body.obj");
+    const body = useMemo(() => bodySrc.clone(true), [bodySrc]);
+    return (
+      <group ref={ref} position={position} rotation={rotation}>
+        <primitive {...rest} object={body} />
+        {children}
+      </group>
+    );
+  }
+);
 
 function lerpAngle(a: number, b: number, t: number): number {
   const delta = Math.atan2(Math.sin(b - a), Math.cos(b - a));
@@ -82,42 +86,58 @@ function Scene({ parts }: SceneProps) {
 
   const partRefs = useRef<THREE.Group[]>([]);
   const initialRotations = useRef<THREE.Euler[]>([]);
-  const anim = useRef<{
-    running: boolean;
-    start: number;
-    dur: number;
-    from: THREE.Euler;
-    to: THREE.Euler;
-  }[]>([]);
+  const anim = useRef<
+    {
+      running: boolean;
+      start: number;
+      dur: number;
+      from: THREE.Euler;
+      to: THREE.Euler;
+    }[]
+  >([]);
 
   useEffect(() => {
     const len = flattenedParts.length;
 
-    partRefs.current = Array.from({ length: len }, (_, i) =>
-      partRefs.current[i] ?? new THREE.Group()
+    partRefs.current = Array.from(
+      { length: len },
+      (_, i) => partRefs.current[i] ?? new THREE.Group()
     );
 
-    initialRotations.current = Array.from({ length: len }, (_, i) =>
-      initialRotations.current[i] ?? new THREE.Euler()
+    initialRotations.current = Array.from(
+      { length: len },
+      (_, i) => initialRotations.current[i] ?? new THREE.Euler()
     );
 
-    anim.current = Array.from({ length: len }, (_, i) =>
-      anim.current[i] ?? {
-        running: false,
-        start: 0,
-        dur: 0.6,
-        from: new THREE.Euler(),
-        to: new THREE.Euler(),
-      }
+    anim.current = Array.from(
+      { length: len },
+      (_, i) =>
+        anim.current[i] ?? {
+          running: false,
+          start: 0,
+          dur: 0.6,
+          from: new THREE.Euler(),
+          to: new THREE.Euler(),
+        }
     );
   }, [flattenedParts]);
 
-  const setPartRef = useCallback((el: THREE.Group | null, index: number) => {
-    if (el) {
-      partRefs.current[index] = el;
-      initialRotations.current[index] = el.rotation.clone();
-    }
-  }, []);
+  const setPartRef = useCallback(
+    (el: THREE.Group | null, index: number) => {
+      if (el) {
+        partRefs.current[index] = el;
+        const part = flattenedParts[index];
+        if (part && part.rotation) {
+          initialRotations.current[index] = new THREE.Euler(
+            part.rotation[0],
+            part.rotation[1],
+            part.rotation[2]
+          );
+        }
+      }
+    },
+    [flattenedParts]
+  );
 
   const setArmAngleInternal = useCallback(
     (options?: { index: number; degrees: number; duration: number }) => {
@@ -138,7 +158,9 @@ function Scene({ parts }: SceneProps) {
       const initialRotation = initialRotations.current[actualIndex];
 
       if (!armRef || !anim.current[actualIndex] || !initialRotation) {
-        console.warn(`armRef, anim state, or initial rotation not found for actualIndex=${actualIndex}`);
+        console.warn(
+          `armRef, anim state, or initial rotation not found for actualIndex=${actualIndex}`
+        );
         return;
       }
 
@@ -149,7 +171,11 @@ function Scene({ parts }: SceneProps) {
       const state = anim.current[actualIndex];
 
       state.from.set(r.x, r.y, r.z);
-      state.to.set(initialRotation.x, initialRotation.y, initialRotation.z + rad);
+      state.to.set(
+        initialRotation.x,
+        initialRotation.y,
+        initialRotation.z + rad
+      );
 
       state.start = performance.now();
       state.dur = Math.max(0, duration * 1000);
@@ -189,12 +215,16 @@ function Scene({ parts }: SceneProps) {
   // Recursive function to render a part and its children
   const renderPart = (part: ConfigPart, key: string): React.ReactNode => {
     const currentIndex = partIndex++;
-    const childElement = part.child ? renderPart(part.child, `${key}-child`) : null;
+    const childElement = part.child
+      ? renderPart(part.child, `${key}-child`)
+      : null;
 
     if (part.type === "arm") {
       return (
         <EDMO_Arm
-          ref={(el: THREE.Group<THREE.Object3DEventMap>) => setPartRef(el, currentIndex)}
+          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+            setPartRef(el, currentIndex)
+          }
           key={key}
           position={part.position}
           rotation={part.rotation}
@@ -205,7 +235,9 @@ function Scene({ parts }: SceneProps) {
     } else if (part.type === "body") {
       return (
         <EDMO_Body
-          ref={(el: THREE.Group<THREE.Object3DEventMap>) => setPartRef(el, currentIndex)}
+          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+            setPartRef(el, currentIndex)
+          }
           key={key}
           position={part.position}
           rotation={part.rotation}
@@ -220,12 +252,20 @@ function Scene({ parts }: SceneProps) {
   return (
     <>
       <ambientLight intensity={Math.PI / 2} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
+      <spotLight
+        position={[10, 10, 10]}
+        angle={0.15}
+        penumbra={1}
+        decay={0}
+        intensity={Math.PI}
+      />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <OrbitControls />
 
       <group>
-        {parts.map((part: ConfigPart, index: number) => renderPart(part, `part-${index}`))}
+        {parts.map((part: ConfigPart, index: number) =>
+          renderPart(part, `part-${index}`)
+        )}
       </group>
     </>
   );
@@ -249,7 +289,9 @@ function Simulation({ configId, onConfigChange }: SimulationProps) {
   useEffect(() => {
     const loadConfigurations = async () => {
       try {
-        const manifestRes = await fetch("/EDMO-IDE/edmoConfigurations/manifest.json");
+        const manifestRes = await fetch(
+          "/EDMO-IDE/edmoConfigurations/manifest.json"
+        );
         const fileList: string[] = await manifestRes.json();
 
         const configs = await Promise.all(
