@@ -13,11 +13,26 @@ import {
 import "../custom_blocks/start";
 
 const interpreters = new Map<string, Interpreter | null>();
+const highlightedBlocks = new Map<string, string | null>();
+
+function setHighlighted(
+  blockId: string | null | undefined,
+  workspace: Blockly.Workspace,
+  highlighted: boolean
+) {
+  if (blockId) {
+    const block = workspace.getBlockById(blockId);
+    if (block) {
+      (block as Blockly.BlockSvg).setHighlighted(highlighted);
+    }
+  }
+}
 
 function initApi(
   interpreter: Interpreter,
   globalObject: unknown,
-  workspace: Blockly.Workspace
+  workspace: Blockly.Workspace,
+  interpreterId: string
 ) {
   // Add an API function for the alert() block.
   interpreter.setProperty(
@@ -42,7 +57,15 @@ function initApi(
     globalObject,
     "highlightBlock",
     interpreter.createNativeFunction(function (id) {
-      return (workspace as Blockly.WorkspaceSvg).highlightBlock(id);
+      const blockId = id ? String(id) : null;
+
+      // Unhighlight the previously highlighted block for this interpreter
+      const previousBlockId = highlightedBlocks.get(interpreterId);
+      setHighlighted(previousBlockId, workspace, false);
+
+      // Highlight the new block
+      setHighlighted(blockId, workspace, true);
+      highlightedBlocks.set(interpreterId, blockId);
     })
   );
 
@@ -60,7 +83,7 @@ function runCode(
   interpreters.set(
     interpreterId,
     new Interpreter(code, (interpreter, globalObject) =>
-      initApi(interpreter, globalObject, workspace)
+      initApi(interpreter, globalObject, workspace, interpreterId)
     )
   );
 
@@ -76,7 +99,12 @@ function runCode(
       window.setTimeout(runner, 10);
     } else {
       toast.success("Code execution completed successfully");
+
+      // Unhighlight the block for this interpreter
+      setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
+
       interpreters.delete(interpreterId);
+      highlightedBlocks.delete(interpreterId);
     }
   };
 
@@ -89,7 +117,12 @@ function runCode(
       console.error("Code execution error:", error);
       toast.error("An error occurred during code execution");
     }
+
+    // Unhighlight the block for this interpreter
+    setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
+
     interpreters.delete(interpreterId);
+    highlightedBlocks.delete(interpreterId);
   }
 }
 
@@ -123,8 +156,14 @@ export function useCodeRunner() {
   const stopCode = (workspace: Blockly.Workspace) => {
     if (interpreters.size === 0) return;
     toast.info("Halting code execution...");
+
+    // Unhighlight all blocks for all interpreters
+    interpreters.forEach((_, interpreterId) => {
+      setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
+    });
+
     interpreters.clear();
-    (workspace as Blockly.WorkspaceSvg).highlightBlock(null);
+    highlightedBlocks.clear();
   };
 
   return {
