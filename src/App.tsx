@@ -14,7 +14,15 @@ function App() {
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
   const { runCodes, infiniteLoopState, stopCode, handleCloseWarning } =
     useCodeRunner();
-  const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
+  const {
+    xml,
+    setXml,
+    robotConfigId,
+    setRobotConfigId,
+    version,
+    handleSaveFile,
+    handleLoadFile,
+  } = useSaving();
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -50,7 +58,7 @@ function App() {
   }
   const handleRunCode = () => {
     if (workspace) {
-      stopCode();
+      stopCode(workspace);
       runCodes(workspace);
     }
   };
@@ -126,7 +134,10 @@ function App() {
           <section className="panel">
             <header className="panel-header">Simulation</header>
             <div className="panel-body simulation">
-              <Simulation />
+              <Simulation
+                configId={robotConfigId}
+                onConfigChange={setRobotConfigId}
+              />
             </div>
           </section>
 
