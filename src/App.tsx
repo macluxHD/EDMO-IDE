@@ -18,7 +18,7 @@ function App() {
     stopCode,
     handleCloseWarning,
   } = useCodeRunner();
-  const { xml, setXml, version, handleSaveFile, handleLoadFile } = useSaving();
+  const { xml, setXml, robotConfigId, setRobotConfigId, version, handleSaveFile, handleLoadFile } = useSaving();
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -108,7 +108,7 @@ function App() {
         >
           <section className="panel">
             <header className="panel-header">Simulation</header>
-            <div className="panel-body simulation"><Simulation /></div>
+            <div className="panel-body simulation"><Simulation configId={robotConfigId} onConfigChange={setRobotConfigId} /></div>
           </section>
 
           <div className="row-resizer" onMouseDown={startRowDrag} />

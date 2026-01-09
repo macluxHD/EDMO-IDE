@@ -1,0 +1,90 @@
+{
+    "id": "biped",
+    "name": "Biped (Experimental)",
+    "parts": [
+        {
+            "type": "body",
+            "isMovable": true,
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                -1.570796327,
+                1.570796327
+            ]
+        },
+        {
+            "type": "arm",
+            "isMovable": false,
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                -1.570796327,
+                1.570796327
+            ]
+        },
+        {
+            "type": "arm",
+            "isMovable": false,
+            "position": [
+                5.17,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                3.141592654,
+                0
+            ]
+        },
+        {
+            "type": "body",
+            "isMovable": true,
+            "position": [
+                5.17,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                3.141592654,
+                0
+            ],
+            "child": {
+                "type": "arm",
+                "isMovable": false,
+                "position": [
+                    -5.11,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    -1.570796327,
+                    1.570796327
+                ],
+                "child": {
+                    "type": "body",
+                    "isMovable": true,
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            }
+        }
+    ]
+}
