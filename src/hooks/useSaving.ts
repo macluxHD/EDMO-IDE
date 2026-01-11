@@ -75,9 +75,9 @@ export function useSaving() {
               return;
             }
 
-            throw new Error("Invalid file content");
+            throw new Error(t("load.invalidFile"));
           } else {
-            throw new Error("Invalid file content");
+            throw new Error(t("load.invalidFile"));
           }
         } catch (error) {
           const errorMessage =

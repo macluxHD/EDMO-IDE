@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function CodeWindow({ code }: { code: string | string[] }) {
+  const { t } = useTranslation();
+
   // Multiple code blocks
   if (Array.isArray(code)) {
     return (
@@ -22,7 +25,7 @@ export default function CodeWindow({ code }: { code: string | string[] }) {
                   borderBottom: "1px solid #3e4451",
                 }}
               >
-                // Thread {index + 1} (runs in parallel)
+                {t("codeWindow.threadLabel", { index: index + 1 })}
               </div>
             )}
             <SyntaxHighlighter
