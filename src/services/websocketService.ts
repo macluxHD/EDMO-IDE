@@ -1,5 +1,9 @@
-export interface RobotCommand {
-  type: "setArmAngle";
+interface WebSocketMessage<T = unknown> {
+  type: string;
+  data: T;
+}
+
+export interface SetArmAngleData {
   index: number;
   degrees: number;
 }
@@ -78,20 +82,28 @@ class WebSocketService {
     }
   }
 
-  sendCommand(command: RobotCommand): boolean {
+  private sendMessage<T>(type: string, data: T): boolean {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.warn("WebSocket is not connected. Command not sent:", command);
+      console.warn("WebSocket is not connected. Message not sent:", {
+        type,
+        data,
+      });
       return false;
     }
 
     try {
-      this.socket.send(JSON.stringify(command));
-      console.log("Command sent to robot:", command);
+      const message: WebSocketMessage<T> = { type, data };
+      this.socket.send(JSON.stringify(message));
+      console.log("Message sent to robot:", message);
       return true;
     } catch (error) {
-      console.error("Failed to send command:", error);
+      console.error("Failed to send message:", error);
       return false;
     }
+  }
+
+  setArmAngle(index: number, degrees: number): boolean {
+    return this.sendMessage<SetArmAngleData>("setArmAngle", { index, degrees });
   }
 
   disconnect() {
