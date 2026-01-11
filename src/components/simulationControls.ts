@@ -16,11 +16,7 @@ export const setArmAngle: SetArmAngleFunction = (options) => {
   }
 
   if (options) {
-    robotWebSocket.sendCommand({
-      type: "setArmAngle",
-      index: options.index,
-      degrees: options.degrees,
-    });
+    robotWebSocket.setArmAngle(options.index, options.degrees);
   }
 };
 

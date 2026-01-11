@@ -1,5 +1,6 @@
 {
   "run": "Run",
+  "stop": "Stop",
   "save": {
     "button": "Save as file",
     "success": "Workspace saved successfully",

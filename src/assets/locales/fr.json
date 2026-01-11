@@ -1,5 +1,6 @@
 {
   "run": "Exécuter",
+  "stop": "Stop",
   "save": {
     "button": "Sauvgarder",
     "success": "Sauvgardé avec succès",
