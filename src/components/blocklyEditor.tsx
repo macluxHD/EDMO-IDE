@@ -10,6 +10,7 @@ interface BlocklyEditorProps {
   onWorkspaceChange: (workspace: Blockly.Workspace) => void;
   onXmlChange: (xml: string) => void;
   onRunCode: () => void;
+  onStopCode: () => void;
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -20,6 +21,7 @@ export default function BlocklyEditor({
   onWorkspaceChange,
   onXmlChange,
   onRunCode,
+  onStopCode,
   onSaveFile,
   onLoadFile,
 }: BlocklyEditorProps) {
@@ -70,6 +72,7 @@ export default function BlocklyEditor({
         <img src={logoUrl} alt="EDMO Logo" className="editor-logo" />
         <div className="toolbar-buttons">
           <button onClick={onRunCode}>Run</button>
+          <button onClick={onStopCode}>Stop</button>
           <button onClick={onSaveFile}>Save as file</button>
           <button onClick={() => fileInputRef.current?.click()}>
             Load from file

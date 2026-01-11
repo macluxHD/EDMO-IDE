@@ -129,6 +129,7 @@ function App() {
           onWorkspaceChange={workspaceDidChange}
           onXmlChange={setXml}
           onRunCode={handleRunCode}
+          onStopCode={() => workspace && stopCode(workspace)}
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
         />
