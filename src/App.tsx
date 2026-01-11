@@ -9,18 +9,21 @@ import { RobotConnection } from "./components/RobotConnection";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
+import { useTranslation } from "react-i18next";
+import { useWorkspaceReload } from "./hooks/useWorkspaceReload";
 
 function App() {
+  const { t } = useTranslation();
   const [javascriptCode, setJavascriptCode] = useState<string | string[]>("");
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
   const { runCodes, infiniteLoopState, stopCode, handleCloseWarning } =
     useCodeRunner();
+  const { version, reloadWorkspace } = useWorkspaceReload();
   const {
     xml,
     setXml,
     robotConfigId,
     setRobotConfigId,
-    version,
     handleSaveFile,
     handleLoadFile,
   } = useSaving();
@@ -132,6 +135,7 @@ function App() {
           onStopCode={() => workspace && stopCode(workspace)}
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
+          onReloadWorkspace={reloadWorkspace}
         />
 
         <div className="col-resizer" onMouseDown={startColDrag} />
@@ -144,7 +148,7 @@ function App() {
           }}
         >
           <section className="panel">
-            <header className="panel-header">Simulation</header>
+            <header className="panel-header">{t("simulation.title")}</header>
             <div className="panel-body simulation">
               <Simulation
                 configId={robotConfigId}
@@ -156,7 +160,7 @@ function App() {
           <div className="row-resizer" onMouseDown={startRowDrag} />
 
           <section className="panel">
-            <header className="panel-header">Generated code</header>
+            <header className="panel-header">{t("codeWindow.title")}</header>
             <div className="panel-body code">
               <CodeWindow code={javascriptCode} />
             </div>

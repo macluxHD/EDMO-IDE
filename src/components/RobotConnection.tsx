@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { robotWebSocket } from "../services/websocketService";
 import "../styles/robotConnection.css";
+import { useTranslation } from "react-i18next";
 
 export function RobotConnection() {
+  const { t } = useTranslation();
   const [isConnected, setIsConnected] = useState(false);
   const [serverUrl, setServerUrl] = useState("ws://localhost:8080");
   const [isConnecting, setIsConnecting] = useState(false);
@@ -45,12 +47,12 @@ export function RobotConnection() {
       <button
         className="robot-connection-trigger"
         onClick={() => setIsModalOpen(true)}
-        title="Robot Connection"
+        title={t("websocket.title")}
       >
         <span
           className={`status-dot ${isConnected ? "connected" : "disconnected"}`}
         />
-        Robot
+        {t("websocket.button")}
       </button>
 
       {/* Modal */}
@@ -64,7 +66,7 @@ export function RobotConnection() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
-              <h3>Robot Connection</h3>
+              <h3>{t("websocket.title")}</h3>
               <button
                 className="close-button"
                 onClick={() => setIsModalOpen(false)}
@@ -76,10 +78,14 @@ export function RobotConnection() {
             <div className="connection-status">
               <span
                 className={`status-indicator ${
-                  isConnected ? "connected" : "disconnected"
+                  isConnected
+                    ? t("websocket.connected")
+                    : t("websocket.disconnected")
                 }`}
               >
-                {isConnected ? "🟢 Connected" : "🔴 Disconnected"}
+                {isConnected
+                  ? "🟢" + t("websocket.connected")
+                  : "🔴 " + t("websocket.disconnected")}
               </span>
             </div>
 
@@ -99,19 +105,25 @@ export function RobotConnection() {
                   disabled={isConnecting}
                   className="connect-button"
                 >
-                  {isConnecting ? "Connecting..." : "Connect"}
+                  {isConnecting
+                    ? t("websocket.connecting")
+                    : t("websocket.connect")}
                 </button>
               ) : (
                 <button
                   onClick={handleDisconnect}
                   className="disconnect-button"
                 >
-                  Disconnect
+                  {t("websocket.disconnect")}
                 </button>
               )}
             </div>
 
-            {error && <div className="connection-error">Error: {error}</div>}
+            {error && (
+              <div className="connection-error">
+                {t("websocket.error")}: {error}
+              </div>
+            )}
           </div>
         </div>
       )}

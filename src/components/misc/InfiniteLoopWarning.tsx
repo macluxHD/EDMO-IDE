@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import "./InfiniteLoopWarning.css";
 
 interface InfiniteLoopWarningProps {
@@ -13,21 +14,22 @@ export default function InfiniteLoopWarning({
   reason,
   iterationCount,
 }: InfiniteLoopWarningProps) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   const message =
     reason === "iterations"
-      ? `Your code executed ${iterationCount?.toLocaleString()} loop iterations and was automatically stopped.`
-      : "Your code ran for too long and was automatically stopped.";
+        ? t('infiniteLoop.iterations', { count: iterationCount })
+        : t('infiniteLoop.timeout');
 
   return (
     <div className="loop-modal-overlay" onClick={onClose}>
       <div className="loop-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="loop-modal-icon">⚠️</div>
-        <h2 className="loop-modal-title">Infinite Loop Detected</h2>
+        <h2 className="loop-modal-title">{t('infiniteLoop.title')}</h2>
         <p className="loop-modal-message">{message}</p>
         <p className="loop-modal-hint">
-          This happens when you have a loop that never ends:
+          {t('infiniteLoop.hint')}
         </p>
         <pre className="loop-modal-code">
           <code>
@@ -37,7 +39,7 @@ end`}
           </code>
         </pre>
         <button className="loop-modal-btn" onClick={onClose}>
-          OK
+          {t('infiniteLoop.closeButton')}
         </button>
       </div>
     </div>

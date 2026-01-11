@@ -10,7 +10,9 @@ import {
   initInterpreterInfiniteLoopTrap,
   INFINITE_LOOP_ERROR,
 } from "./useInfiniteLoopDetection";
+import { useTranslation } from "react-i18next";
 import "../custom_blocks/start";
+import { t } from "i18next";
 
 const interpreters = new Map<string, Interpreter | null>();
 const highlightedBlocks = new Map<string, string | null>();
@@ -98,7 +100,7 @@ function runCode(
       // Try again later.
       window.setTimeout(runner, 10);
     } else {
-      toast.success("Code execution completed successfully");
+      toast.success(t("codeRunner.success"));
 
       // Unhighlight the block for this interpreter
       setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
@@ -115,7 +117,7 @@ function runCode(
       handleInfiniteLoopDetection("iterations");
     } else {
       console.error("Code execution error:", error);
-      toast.error("An error occurred during code execution");
+      toast.error(t("codeRunner.error"));
     }
 
     // Unhighlight the block for this interpreter
@@ -127,6 +129,7 @@ function runCode(
 }
 
 export function useCodeRunner() {
+  const { t } = useTranslation();
   const { infiniteLoopState, handleInfiniteLoopDetection, handleCloseWarning } =
     useInfiniteLoopDetection();
 
@@ -155,7 +158,7 @@ export function useCodeRunner() {
 
   const stopCode = (workspace: Blockly.Workspace) => {
     if (interpreters.size === 0) return;
-    toast.info("Halting code execution...");
+    toast.info(t("codeRunner.halting"));
 
     // Unhighlight all blocks for all interpreters
     interpreters.forEach((_, interpreterId) => {
