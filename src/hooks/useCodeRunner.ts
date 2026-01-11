@@ -11,10 +11,30 @@ import {
   INFINITE_LOOP_ERROR,
 } from "./useInfiniteLoopDetection";
 import { useTranslation } from "react-i18next";
+import "../custom_blocks/start";
 
 const interpreters = new Map<string, Interpreter | null>();
+const highlightedBlocks = new Map<string, string | null>();
 
-function initApi(interpreter: Interpreter, globalObject: unknown) {
+function setHighlighted(
+  blockId: string | null | undefined,
+  workspace: Blockly.Workspace,
+  highlighted: boolean
+) {
+  if (blockId) {
+    const block = workspace.getBlockById(blockId);
+    if (block) {
+      (block as Blockly.BlockSvg).setHighlighted(highlighted);
+    }
+  }
+}
+
+function initApi(
+  interpreter: Interpreter,
+  globalObject: unknown,
+  workspace: Blockly.Workspace,
+  interpreterId: string
+) {
   // Add an API function for the alert() block.
   interpreter.setProperty(
     globalObject,
@@ -33,9 +53,78 @@ function initApi(interpreter: Interpreter, globalObject: unknown) {
     })
   );
 
+  // Add an API function for highlighting blocks.
+  interpreter.setProperty(
+    globalObject,
+    "highlightBlock",
+    interpreter.createNativeFunction(function (id) {
+      const blockId = id ? String(id) : null;
+
+      // Unhighlight the previously highlighted block for this interpreter
+      const previousBlockId = highlightedBlocks.get(interpreterId);
+      setHighlighted(previousBlockId, workspace, false);
+
+      // Highlight the new block
+      setHighlighted(blockId, workspace, true);
+      highlightedBlocks.set(interpreterId, blockId);
+    })
+  );
+
   initInterpreterSleep(interpreter, globalObject);
   initInterpreterSetRotation(interpreter, globalObject);
   initInterpreterInfiniteLoopTrap(interpreter, globalObject);
+}
+
+function runCode(
+  code: string,
+  handleInfiniteLoopDetection: (reason: "iterations" | "timeout") => void,
+  workspace: Blockly.Workspace
+) {
+  const interpreterId = uuidv4();
+  interpreters.set(
+    interpreterId,
+    new Interpreter(code, (interpreter, globalObject) =>
+      initApi(interpreter, globalObject, workspace, interpreterId)
+    )
+  );
+
+  const runner = () => {
+    const interpreter = interpreters.get(interpreterId);
+    if (!interpreter) return;
+
+    const hasMore = interpreter.run();
+
+    if (hasMore) {
+      // Execution is currently blocked by some async call.
+      // Try again later.
+      window.setTimeout(runner, 10);
+    } else {
+      toast.success("Code execution completed successfully");
+
+      // Unhighlight the block for this interpreter
+      setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
+
+      interpreters.delete(interpreterId);
+      highlightedBlocks.delete(interpreterId);
+    }
+  };
+
+  try {
+    runner();
+  } catch (error) {
+    if (error === INFINITE_LOOP_ERROR) {
+      handleInfiniteLoopDetection("iterations");
+    } else {
+      console.error("Code execution error:", error);
+      toast.error("An error occurred during code execution");
+    }
+
+    // Unhighlight the block for this interpreter
+    setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
+
+    interpreters.delete(interpreterId);
+    highlightedBlocks.delete(interpreterId);
+  }
 }
 
 export function useCodeRunner() {
@@ -43,52 +132,44 @@ export function useCodeRunner() {
   const { infiniteLoopState, handleInfiniteLoopDetection, handleCloseWarning } =
     useInfiniteLoopDetection();
 
-  const runCode = async (workspace: Blockly.Workspace) => {
+  const runCodes = async (workspace: Blockly.Workspace) => {
+    const allBlocks = workspace.getAllBlocks(false);
+    const startBlock = allBlocks.filter((block) => block.type === "start");
+
+    if (startBlock.length === 0) return;
+
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
-    const code = javascriptGenerator.workspaceToCode(workspace);
+    javascriptGenerator.STATEMENT_PREFIX = "highlightBlock(%1);\n";
+    javascriptGenerator.addReservedWords("highlightBlock");
+
+    const codes = startBlock.map((block) => {
+      const code = javascriptGenerator.blockToCode(block);
+      return Array.isArray(code) ? code[0] : code;
+    });
     javascriptGenerator.INFINITE_LOOP_TRAP = null;
+    javascriptGenerator.STATEMENT_PREFIX = null;
 
-    const interpreterId = uuidv4();
-    interpreters.set(interpreterId, new Interpreter(code, initApi));
-
-    const runner = () => {
-      const interpreter = interpreters.get(interpreterId);
-      if (!interpreter) return;
-
-      const hasMore = interpreter.run();
-
-      if (hasMore) {
-        // Execution is currently blocked by some async call.
-        // Try again later.
-        window.setTimeout(runner, 10);
-      } else {
-        toast.success(t("codeRunner.success"));
-        interpreters.delete(interpreterId);
-      }
-    };
-
-    try {
-      runner();
-    } catch (error) {
-      if (error === INFINITE_LOOP_ERROR) {
-        handleInfiniteLoopDetection("iterations");
-      } else {
-        console.error("Code execution error:", error);
-        toast.error(t("codeRunner.error"));
-      }
-      interpreters.delete(interpreterId);
+    for (const code of codes) {
+      runCode(code, handleInfiniteLoopDetection, workspace);
     }
   };
 
-  const stopCode = () => {
+  const stopCode = (workspace: Blockly.Workspace) => {
     if (interpreters.size === 0) return;
     toast.info(t("codeRunner.halting"));
+
+    // Unhighlight all blocks for all interpreters
+    interpreters.forEach((_, interpreterId) => {
+      setHighlighted(highlightedBlocks.get(interpreterId), workspace, false);
+    });
+
     interpreters.clear();
+    highlightedBlocks.clear();
   };
 
   return {
-    runCode,
+    runCodes,
     stopCode,
     infiniteLoopState,
     handleCloseWarning,

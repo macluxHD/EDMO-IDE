@@ -41,7 +41,7 @@ export function initInterpreterSetRotation(
   ) {
     console.log(`setServoRotation called with id=${servoId}, angle=${angle}`);
     setArmAngle({
-      side: servoId === 0 ? "left" : "right",
+      index: servoId,
       degrees: angle,
       duration: 0.6,
     });

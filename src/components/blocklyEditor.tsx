@@ -82,7 +82,7 @@ export default function BlocklyEditor({
           </button>
           <input
             type="file"
-            accept=".xml"
+            accept=".edmo.json"
             style={{ display: "none" }}
             ref={fileInputRef}
             onChange={onLoadFile}

@@ -138,48 +138,6 @@ html, body, #root {
   height: 100% !important;
 }
 
-
-
-/***************
-  BLOCKLY CANVAS
-***************/
-.editor-canvas {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* make grid dots more subtle */
-.blocklyMainBackground {
-  stroke: #dcdcdc !important;
-  stroke-width: 0.7 !important;
-  opacity: 0.8 !important;
-}
-
-/* block shadow + rounding */
-.blocklySvg {
-  background-color: #f6f7f9 !important;
-}
-.blocklyBlockCanvas .blocklyDraggable > path.blocklyPath {
-  stroke-width: 0 !important;
-  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.1));
-}
-.blocklyFlyoutBackground {
-  fill: #f1f1f1 !important;
-  fill-opacity: 1 !important;
-  stroke: #ccc !important;
-}
-
-/* toolbox styling */
-.blocklyToolboxDiv {
-  background: #ebebeb !important;
-  border-right: 1px solid #ccc !important;
-}
-.blocklyTreeLabel { color: #111 !important; font-size: 13px !important; }
-.blocklyTreeRow { padding: 6px 10px !important; }
-.blocklyTreeRow:hover { background: #dedede !important; }
-.blocklyTreeRowSelected { background: #ccc !important; }
-
 /***************
   CODE WINDOW + SIM
 ***************/

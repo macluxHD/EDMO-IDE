@@ -42,6 +42,10 @@ export default {
             },
           },
         },
+        {
+          kind: "block",
+          type: "start"
+        },
       ],
     },
     {
