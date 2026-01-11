@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { setBlocklyLocale } from "../i18n";
 
 const languages = [
   { code: "nl", name: "Nederlands", flag: "🇳🇱" },
@@ -17,6 +18,7 @@ function LanguageSelector({ onReloadWorkspace }: LanguageSelectorProps) {
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
     localStorage.setItem("language", langCode);
+    setBlocklyLocale(langCode);
 
     onReloadWorkspace();
   };
