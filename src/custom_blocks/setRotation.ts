@@ -2,19 +2,19 @@ import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
 import { setArmAngle } from "../components/simulationControls";
 import type Interpreter from "js-interpreter";
+import i18next from "../i18n";
 
 // Sets rotation of servo x to angle y
 Blockly.Blocks["set_rotation"] = {
   init: function () {
     this.setColour("#5e3c58");
-    this.setTooltip(
-      "Sets the rotation of the specified servo to the given angle."
-    );
+    this.setTooltip(i18next.t('setRotation.tooltip'));
     this.setInputsInline(true);
     this.appendValueInput("SERVO_ID")
       .setCheck("Number")
-      .appendField("set rotation of servo");
-    this.appendValueInput("ANGLE").setCheck("Number").appendField("to angle");
+      .appendField(i18next.t('setRotation.block1'));
+    this.appendValueInput("ANGLE").setCheck("Number").appendField(i18next.t('setRotation.block2'));
+    this.appendDummyInput().appendField(i18next.t('setRotation.block3'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
   },

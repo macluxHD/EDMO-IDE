@@ -5,6 +5,7 @@ import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { registerSetArmAngle } from "./simulationControls";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface ConfigPart {
   type: "arm" | "body";
@@ -277,6 +278,7 @@ interface SimulationProps {
 }
 
 function Simulation({ configId, onConfigChange }: SimulationProps) {
+  const { t } = useTranslation();
   const [configurations, setConfigurations] = useState<EdmoConfig[]>([]);
   const configIdRef = React.useRef(configId);
   const onConfigChangeRef = React.useRef(onConfigChange);
@@ -337,7 +339,7 @@ function Simulation({ configId, onConfigChange }: SimulationProps) {
             letterSpacing: "0.5px",
           }}
         >
-          Config:
+          {t("simulation.configselector")}:
         </label>
         <select
           id="config-select"

@@ -1,0 +1,57 @@
+{
+  "run": "Start",
+  "stop": "Stop",
+  "save": {
+    "button": "Opslaan",
+    "success": "Succesvol opgeslagen",
+    "error": "Er is een probleem opgetreden tijdens het opslaan: {{errorMessage}}"
+  },
+  "load": {
+    "button": "Bestand openen",
+    "success": "Bestand succesvol geopend",
+    "error": "Er is een probleem opgetreden tijdens het openen van het bestand: {{errorMessage}}",
+    "invalidContent": "Bestand bevat ongeldige inhoud"
+  },
+  "simulation": {
+    "title": "Simulatie",
+    "configselector": "Robotconfiguratie"
+  },
+  "codeWindow": {
+    "title": "Gegenereerde code",
+    "threadLabel": "Thread {{index}} (voert parallel uit)"
+  },
+  "infiniteLoop": {
+    "iterations": "De code houdt na {{count}} herhalingen op.",
+    "timeout": "Het uitvoeren van de code duurt te lang en wordt gestopt.",
+    "title": "Oneindige loop gedetecteerd",
+    "hint": "Dit gebeurt wanneer je code hebt die zich eeuwig herhaalt:",
+    "closeButton": "OK",
+    "warning": "Door een oneindige loop wordt het uitvoeren van de code gestopt"
+  },
+  "setRotation": {
+    "tooltip": "Stelt de rotatie van de gekozen servo in op de opgegeven hoek.",
+    "block1": "stel de rotatie van de servo",
+    "block2": "in op",
+    "block3": "graden"
+  },
+  "sleep": {
+    "tooltip": "Pauzeert de uitvoering van de code voor het aantal opgegeven seconden.",
+    "block1": "Pauzeer de code voor",
+    "block2": "seconde(n)"
+  },
+  "codeRunner": {
+    "success": "De code is succesvol uitgevoerd",
+    "error": "Er is een probleem opgetreden tijdens het uitvoeren van de code.",
+    "halting": "De uitvoering van de code wordt gestopt..."
+  },
+  "websocket": {
+    "title": "Verbinding met robot",
+    "button": "Robot",
+    "connected": "Verbonden",
+    "disconnected": "Verbinding verbroken",
+    "disconnect": "Verbreek verbinding",
+    "connecting": "Aan het verbinden...",
+    "connect": "Verbind",
+    "error": "Er is een fout opgetreden tijdens het verbinden"
+  }
+}

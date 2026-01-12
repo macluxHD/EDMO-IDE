@@ -1,17 +1,18 @@
 import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
 import Interpreter from "js-interpreter";
+import i18next from "../i18n";
 
 Blockly.Blocks["sleep"] = {
   init: function () {
     this.setColour("#5e3c58");
-    this.setTooltip("Pauses the program for the specified number of seconds.");
+    this.setTooltip(i18next.t('sleep.tooltip'));
     this.setInputsInline(true);
 
     this.appendValueInput("SECONDS")
       .setCheck("Number")
-      .appendField("Sleep for");
-
+      .appendField(i18next.t('sleep.block1'));
+    this.appendDummyInput().appendField(i18next.t('sleep.block2'));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
   },
