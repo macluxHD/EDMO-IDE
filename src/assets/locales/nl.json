@@ -9,13 +9,16 @@
   "load": {
     "button": "Bestand openen",
     "success": "Bestand succesvol geopend",
-    "error": "Er is een probleem opgetreden tijdens het openen van het bestand: {{errorMessage}}"
+    "error": "Er is een probleem opgetreden tijdens het openen van het bestand: {{errorMessage}}",
+    "invalidContent": "Bestand bevat ongeldige inhoud"
   },
   "simulation": {
-    "title": "Simulatie"
+    "title": "Simulatie",
+    "configselector": "Robotconfiguratie"
   },
   "codeWindow": {
-    "title": "Gegenereerde code"
+    "title": "Gegenereerde code",
+    "threadLabel": "Thread {{index}} (voert parallel uit)"
   },
   "infiniteLoop": {
     "iterations": "De code houdt na {{count}} herhalingen op.",
@@ -40,5 +43,15 @@
     "success": "De code is succesvol uitgevoerd",
     "error": "Er is een probleem opgetreden tijdens het uitvoeren van de code.",
     "halting": "De uitvoering van de code wordt gestopt..."
+  },
+  "websocket": {
+    "title": "Verbinding met robot",
+    "button": "Robot",
+    "connected": "Verbonden",
+    "disconnected": "Verbinding verbroken",
+    "disconnect": "Verbreek verbinding",
+    "connecting": "Aan het verbinden...",
+    "connect": "Verbind",
+    "error": "Er is een fout opgetreden tijdens het verbinden"
   }
 }
