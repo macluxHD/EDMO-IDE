@@ -79,6 +79,8 @@ export default function BlocklyEditor({
     return Blockly.Theme.defineTheme("edmoTheme", opts);
   }, []);
 
+  const isStepDisabled = (isRunning && !isPaused) || isWaitingForAsync;
+
   return (
     <div className="editor-wrapper">
       {/* Toolbar */}
@@ -89,7 +91,8 @@ export default function BlocklyEditor({
           <button onClick={onStopCode} disabled={!isRunning}>{t("stop")}</button>
           <button 
             onClick={onStepCode} 
-            disabled={(isRunning && !isPaused) || isWaitingForAsync}
+            disabled={isStepDisabled}
+            className={isStepDisabled ? 'disabled' : ''}
             title={isWaitingForAsync ? "Waiting for async operation (e.g., sleep) to complete..." : ""}
           >
             {t("step")}
