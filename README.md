@@ -1,34 +1,48 @@
 # EDMO IDE
-This repo is part of Project 3-1 (BCS3300) at Maastricht Univeristy
+Blockly-based IDE and simulator for the EDMO modular robot, built for Project 3-1 (BCS3300) at Maastricht University.
 
-You can try it out at: https://macluxhd.github.io/EDMO-IDE/
+## Live Demo
+Try the hosted build at https://macluxhd.github.io/EDMO-IDE/.
 
-## Run locally
+## Local Development
+**Requirements:** Node.js (18+ recommended) and git.
 
-To run it locally you need git and [Nodejs](https://nodejs.org/en/download)
+1. Clone the repository and install dependencies:
+   ```bash
+   git clone https://github.com/macluxHD/EDMO-IDE
+   cd EDMO-IDE
+   npm install
+   ```
+2. Start the Vite dev server:
+   ```bash
+   npm run dev
+   ```
+3. Open the URL printed in the terminal to access the IDE.
 
-1. Clone the repo
-```shell
-git clone https://github.com/macluxHD/EDMO-IDE
+Workspace XML is cached in `localStorage`, and the UI lets you export/import `.xml` files for portability.
+
+## MCP Prototype & AI Integration
+The repository ships with a lightweight MCP-style server (`server/mcpServer.js`) and a client helper (`src/mcpConnector.ts`). The server reads the real TypeScript sources and returns *only* the exact function definition that is exported in the codebase, so external agents always see the authoritative implementation.
+
+### Running the MCP server
+```powershell
+cd server
+npm install
+npm start
 ```
-2. Change into the project directory
-```shell
-cd EDMO-IDE
-```
-3. Install dependencies
-```shell
-npm i
-```
-4. Start the local dev server
-```shell
-npm run dev
-```
+The server listens on `http://localhost:4000` (override with `PORT`). It exposes both REST and WebSocket interfaces:
 
-To access it, open the link printed in the console in your browser.
+- `GET /functions` - list function metadata (`name`, `signature`, `description`).
+- `GET /functions/:name` - compute the current code snippet straight from the TypeScript file and return it as `codeTemplate` plus optional `blockXml`.
+- WebSocket `/mcp` - send `{ type: "list_functions" }` or `{ type: "get_function_code", functionName }` to receive the same payloads. Message envelopes include `.response` suffixes and echo your `messageId`.
 
-## Acknowledgements  
-This project uses STL files from the educational modular robot platform **EDMO**, developed by the DKE SwarmLab at Maastricht University. Please acknowledge their work if you build upon these materials.
+### Available functions today
+| Name | Source | Description |
+| --- | --- | --- |
+| `setServoRotation` | `src/custom_blocks/setRotation.ts` | Routes Blockly block output into the simulation by rotating the left/right EDMO arms. |
+| `sleep` | `src/custom_blocks/sleep.ts` | Creates an abort-aware sleep helper used by generated asynchronous Blockly code. |
 
-For more information about EDMO, visit [EDMO project page](https://www.maastrichtuniversity.nl/edmo)
+To consume the API from the frontend, import helpers from `src/mcpConnector.ts` and call `fetchFunctionList`, `requestFunctionCode`, or use `connectMCP` for a persistent WebSocket session.
 
-Thank you to the DKE SwarmLab at Maastricht University for providing these free to use materials.
+## Acknowledgements
+This project uses STL files from the educational modular robot platform **EDMO**, developed by the DKE SwarmLab at Maastricht University. Please acknowledge their work if you build upon these materials. Read more at the [EDMO project page](https://www.maastrichtuniversity.nl/edmo).
