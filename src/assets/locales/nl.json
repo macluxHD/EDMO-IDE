@@ -1,6 +1,8 @@
 {
   "run": "Start",
   "stop": "Stop",
+  "step": "Stap",
+  "reset": "Reset",
   "save": {
     "button": "Opslaan",
     "success": "Succesvol opgeslagen",

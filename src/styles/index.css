@@ -123,6 +123,23 @@ html, body, #root {
 }
 .toolbar-buttons button:hover { background: var(--accent); }
 
+/* Disabled button style - only applies to buttons with .disabled class (Step button) */
+.toolbar-buttons button.disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  background-color: #1a1a1a !important;
+  color: #666666 !important;
+  border-color: #444444 !important;
+}
+
+.toolbar-buttons button.disabled:hover {
+  background-color: #1a1a1a !important;
+  color: #666666 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 /* Canvas fills the rest */
 .editor-canvas {
   flex: 1;                    /* take remaining space */

@@ -16,8 +16,16 @@ function App() {
   const { t } = useTranslation();
   const [javascriptCode, setJavascriptCode] = useState<string | string[]>("");
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
-  const { runCodes, infiniteLoopState, stopCode, handleCloseWarning } =
-    useCodeRunner();
+  const {
+    runCodes,
+    infiniteLoopState,
+    stopCode,
+    handleCloseWarning,
+    stepForward,
+    isPaused,
+    isRunning,
+    isWaitingForAsync,
+  } = useCodeRunner();
   const { version, reloadWorkspace } = useWorkspaceReload();
   const {
     xml,
@@ -73,7 +81,19 @@ function App() {
   const handleRunCode = () => {
     if (workspace) {
       stopCode(workspace);
-      runCodes(workspace);
+      runCodes(workspace, 'continuous');
+    }
+  };
+
+  const handleStepCode = () => {
+    if (workspace) {
+      if (!isRunning) {
+        // Start in step mode
+        runCodes(workspace, 'step');
+      } else if (isPaused) {
+        // Continue stepping
+        stepForward();
+      }
     }
   };
 
@@ -133,9 +153,13 @@ function App() {
           onXmlChange={setXml}
           onRunCode={handleRunCode}
           onStopCode={() => workspace && stopCode(workspace)}
+          onStepCode={handleStepCode}
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
           onReloadWorkspace={reloadWorkspace}
+          isRunning={isRunning}
+          isPaused={isPaused}
+          isWaitingForAsync={isWaitingForAsync}
         />
 
         <div className="col-resizer" onMouseDown={startColDrag} />
