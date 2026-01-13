@@ -1,6 +1,8 @@
 {
   "run": "Ausführen",
   "stop": "Stop",
+  "step": "Schritt",
+  "reset": "Zurücksetzen",
   "save": {
     "button": "Speichern",
     "success": "Erfolgreich gespeichert",

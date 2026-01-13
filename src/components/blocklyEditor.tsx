@@ -13,9 +13,13 @@ interface BlocklyEditorProps {
   onXmlChange: (xml: string) => void;
   onRunCode: () => void;
   onStopCode: () => void;
+  onStepCode: () => void;
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onReloadWorkspace: () => void;
+  isRunning: boolean;
+  isPaused: boolean;
+  isWaitingForAsync: boolean;
 }
 
 export default function BlocklyEditor({
@@ -25,9 +29,13 @@ export default function BlocklyEditor({
   onXmlChange,
   onRunCode,
   onStopCode,
+  onStepCode,
   onSaveFile,
   onLoadFile,
   onReloadWorkspace,
+  isRunning,
+  isPaused,
+  isWaitingForAsync,
 }: BlocklyEditorProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -77,8 +85,15 @@ export default function BlocklyEditor({
       <div className="editor-toolbar">
         <img src={logoUrl} alt="EDMO Logo" className="editor-logo" />
         <div className="toolbar-buttons">
-          <button onClick={onRunCode}>{t("run")}</button>
-          <button onClick={onStopCode}>{t("stop")}</button>
+          <button onClick={onRunCode} disabled={isRunning && !isPaused}>{t("run")}</button>
+          <button onClick={onStopCode} disabled={!isRunning}>{t("stop")}</button>
+          <button 
+            onClick={onStepCode} 
+            disabled={(isRunning && !isPaused) || isWaitingForAsync}
+            title={isWaitingForAsync ? "Waiting for async operation (e.g., sleep) to complete..." : ""}
+          >
+            {t("step")}
+          </button>
           <button onClick={onSaveFile}>{t("save.button")}</button>
           <button onClick={() => fileInputRef.current?.click()}>
             {t("load.button")}

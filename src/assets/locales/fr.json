@@ -1,6 +1,8 @@
 {
   "run": "Exécuter",
   "stop": "Stop",
+  "step": "Étape",
+  "reset": "Réinitialiser",
   "save": {
     "button": "Sauvgarder",
     "success": "Sauvgardé avec succès",
