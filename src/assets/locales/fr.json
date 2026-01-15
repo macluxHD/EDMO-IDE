@@ -34,6 +34,14 @@
     "block2": "à",
     "block3": "degrés"
   },
+  "setOscillator": {
+    "tooltip": "Définit les paramètres de l'oscillateur du servo spécifié.",
+    "block1": "définir l'oscillateur du servo",
+    "frequency": "fréquence",
+    "amplitude": "amplitude",
+    "offset": "offset",
+    "phaseShift": "déphasage"
+  },
   "sleep": {
     "tooltip": "Met le programme en pause pendant le nombre de secondes spécifié.",
     "block1": "Pause pendant",

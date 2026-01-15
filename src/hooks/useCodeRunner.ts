@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next";
 import "../custom_blocks/start";
 import { t } from "i18next";
+import { initInterpreterSetOscillator } from "../custom_blocks/setOscillator";
 
 const interpreters = new Map<string, Interpreter | null>();
 const highlightedBlocks = new Map<string, string | null>();
@@ -74,6 +75,7 @@ function initApi(
   initInterpreterSleep(interpreter, globalObject);
   initInterpreterSetRotation(interpreter, globalObject);
   initInterpreterInfiniteLoopTrap(interpreter, globalObject);
+  initInterpreterSetOscillator(interpreter, globalObject);
 }
 
 function runCode(

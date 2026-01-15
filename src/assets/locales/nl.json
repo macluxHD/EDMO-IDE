@@ -34,6 +34,14 @@
     "block2": "in op",
     "block3": "graden"
   },
+  "setOscillator": {
+    "tooltip": "Stelt de oscillatorparameters van de opgegeven servo in.",
+    "block1": "stel oscillator van servo in",
+    "frequency": "frequentie",
+    "amplitude": "amplitude",
+    "offset": "offset",
+    "phaseShift": "faseverschuiving"
+  },
   "sleep": {
     "tooltip": "Pauzeert de uitvoering van de code voor het aantal opgegeven seconden.",
     "block1": "Pauzeer de code voor",

@@ -3,9 +3,22 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import { registerSetArmAngle } from "./simulationControls";
+import {
+  registerSetArmAngle,
+  registerSetOscillator,
+  registerStopOscillator,
+} from "./simulationControls";
 import React from "react";
 import { useTranslation } from "react-i18next";
+
+interface OscillatorState {
+  active: boolean;
+  frequency: number;
+  amplitude: number;
+  offset: number;
+  phaseShift: number;
+  startTime: number;
+}
 
 interface ConfigPart {
   type: "arm" | "body";
@@ -97,6 +110,8 @@ function Scene({ parts }: SceneProps) {
     }[]
   >([]);
 
+  const oscillators = useRef<OscillatorState[]>([]);
+
   useEffect(() => {
     const len = flattenedParts.length;
 
@@ -119,6 +134,19 @@ function Scene({ parts }: SceneProps) {
           dur: 0.6,
           from: new THREE.Euler(),
           to: new THREE.Euler(),
+        }
+    );
+
+    oscillators.current = Array.from(
+      { length: len },
+      (_, i) =>
+        oscillators.current[i] ?? {
+          active: false,
+          frequency: 0,
+          amplitude: 0,
+          offset: 0,
+          phaseShift: 0,
+          startTime: 0,
         }
     );
   }, [flattenedParts]);
@@ -165,6 +193,10 @@ function Scene({ parts }: SceneProps) {
         return;
       }
 
+      if (oscillators.current[actualIndex]) {
+        oscillators.current[actualIndex].active = false;
+      }
+
       const clampedDegrees = THREE.MathUtils.clamp(degrees, -90, 90);
       const rad = THREE.MathUtils.degToRad(clampedDegrees);
 
@@ -189,26 +221,123 @@ function Scene({ parts }: SceneProps) {
     [flattenedParts]
   );
 
+  const setOscillatorInternal = useCallback(
+    (options?: {
+      index: number;
+      frequency: number;
+      amplitude: number;
+      offset: number;
+      phaseShift: number;
+    }) => {
+      if (!options) return;
+      const { index, frequency, amplitude, offset, phaseShift } = options;
+
+      const movableParts = flattenedParts
+        .map((part, i) => (part.isMovable ? i : -1))
+        .filter((i) => i !== -1);
+
+      const actualIndex = movableParts[index];
+      if (actualIndex === undefined) {
+        console.warn(`Arm index ${index} not found for oscillator`);
+        return;
+      }
+
+      if (!oscillators.current[actualIndex]) {
+        console.warn(
+          `Oscillator state not found for actualIndex=${actualIndex}`
+        );
+        return;
+      }
+
+      if (anim.current[actualIndex]) {
+        anim.current[actualIndex].running = false;
+      }
+
+      const osc = oscillators.current[actualIndex];
+      osc.active = true;
+      osc.frequency = frequency;
+      osc.amplitude = amplitude;
+      osc.offset = offset;
+      osc.phaseShift = phaseShift;
+      osc.startTime = performance.now();
+
+      console.log(
+        `Oscillator started for servo ${index}: freq=${frequency}, amp=${amplitude}, offset=${offset}, phaseShift=${phaseShift}`
+      );
+    },
+    [flattenedParts]
+  );
+
+  const stopOscillatorInternal = useCallback(
+    (index: number) => {
+      const movableParts = flattenedParts
+        .map((part, i) => (part.isMovable ? i : -1))
+        .filter((i) => i !== -1);
+
+      const actualIndex = movableParts[index];
+      if (actualIndex === undefined) {
+        return;
+      }
+
+      if (oscillators.current[actualIndex]) {
+        oscillators.current[actualIndex].active = false;
+      }
+    },
+    [flattenedParts]
+  );
+
   React.useEffect(() => {
     registerSetArmAngle(setArmAngleInternal);
-  }, [setArmAngleInternal]);
+    registerSetOscillator(setOscillatorInternal);
+    registerStopOscillator(stopOscillatorInternal);
+  }, [setArmAngleInternal, setOscillatorInternal, stopOscillatorInternal]);
 
   useFrame(() => {
     const now = performance.now();
 
-    flattenedParts.forEach((_, i) => {
+    flattenedParts.forEach((part, i) => {
       const ref = partRefs.current[i];
+      if (!ref) return;
+
+      const initialRotation = initialRotations.current[i];
+      const osc = oscillators.current[i];
       const state = anim.current[i];
-      if (!state || !state.running || !ref) return;
-      const t = THREE.MathUtils.clamp((now - state.start) / state.dur, 0, 1);
-      const e = easeInOutCubic(t);
 
-      const r = ref.rotation;
-      r.x = lerpAngle(state.from.x, state.to.x, e);
-      r.y = lerpAngle(state.from.y, state.to.y, e);
-      r.z = lerpAngle(state.from.z, state.to.z, e);
+      // Handle oscillation (takes priority over animation if active)
+      if (osc && osc.active && part.isMovable) {
+        const t = (now - osc.startTime) / 1000;
 
-      if (t >= 1) state.running = false;
+        // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
+        const angle =
+          osc.amplitude *
+            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+          osc.offset;
+
+        const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
+        const rad = THREE.MathUtils.degToRad(clampedAngle);
+
+        if (initialRotation) {
+          ref.rotation.set(
+            initialRotation.x,
+            initialRotation.y,
+            initialRotation.z + rad
+          );
+        }
+        return;
+      }
+
+      // Handle regular animation (lerp)
+      if (state && state.running) {
+        const t = THREE.MathUtils.clamp((now - state.start) / state.dur, 0, 1);
+        const e = easeInOutCubic(t);
+
+        const r = ref.rotation;
+        r.x = lerpAngle(state.from.x, state.to.x, e);
+        r.y = lerpAngle(state.from.y, state.to.y, e);
+        r.z = lerpAngle(state.from.z, state.to.z, e);
+
+        if (t >= 1) state.running = false;
+      }
     });
   });
 

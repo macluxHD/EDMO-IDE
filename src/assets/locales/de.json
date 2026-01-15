@@ -34,6 +34,14 @@
     "block2": "auf",
     "block3": "Grad"
   },
+  "setOscillator": {
+    "tooltip": "Stellt die Oszillatorparameter des angegebenen Servos ein.",
+    "block1": "Setze Oszillator des Servos",
+    "frequency": "Frequenz",
+    "amplitude": "Amplitude",
+    "offset": "Versatz",
+    "phaseShift": "Phasenverschiebung"
+  },
   "sleep": {
     "tooltip": "Pausiert die Codeausführung für die angegebenen Sekunden.",
     "block1": "Pausiere für",
