@@ -2,27 +2,32 @@ import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
 import { setOscillator } from "../components/simulationControls";
 import type Interpreter from "js-interpreter";
+import i18next from "../i18n";
 
 // Sets oscillators frequency, amplitude, offset, phase shift and phase for servo x
 Blockly.Blocks["set_oscillator"] = {
   init: function () {
     this.setColour("#5e3c58");
-    this.setTooltip("Sets the oscillator parameters of the specified servo.");
+    this.setTooltip(i18next.t("setOscillator.tooltip"));
     this.setInputsInline(true);
     this.appendValueInput("SERVO_ID")
       .setCheck("Number")
-      .appendField("set oscillator of servo");
+      .appendField(i18next.t("setOscillator.block1"));
     this.appendValueInput("FREQUENCY")
       .setCheck("Number")
-      .appendField("frequency");
+      .appendField(i18next.t("setOscillator.frequency"));
     this.appendValueInput("AMPLITUDE")
       .setCheck("Number")
-      .appendField("amplitude");
-    this.appendValueInput("OFFSET").setCheck("Number").appendField("offset");
+      .appendField(i18next.t("setOscillator.amplitude"));
+    this.appendValueInput("OFFSET")
+      .setCheck("Number")
+      .appendField(i18next.t("setOscillator.offset"));
     this.appendValueInput("PHASE_SHIFT")
       .setCheck("Number")
-      .appendField("phase shift");
-    this.appendValueInput("PHASE").setCheck("Number").appendField("phase");
+      .appendField(i18next.t("setOscillator.phaseShift"));
+    this.appendValueInput("PHASE")
+      .setCheck("Number")
+      .appendField(i18next.t("setOscillator.phase"));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
   },
