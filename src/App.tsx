@@ -4,7 +4,7 @@ import * as Blockly from "blockly";
 
 import BlocklyEditor from "./components/blocklyEditor";
 import CodeWindow from "./components/codeWindow";
-import Simulation from "./components/simulation";
+import Simulation from "./components/simulation/Simulation";
 import { RobotConnection } from "./components/RobotConnection";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";

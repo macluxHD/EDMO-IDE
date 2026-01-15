@@ -1,114 +1,21 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
-import { OrbitControls } from "@react-three/drei";
+import React, { useMemo, useEffect, useRef, useCallback } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
   registerSetArmAngle,
   registerSetOscillator,
   registerStopOscillator,
-} from "./simulationControls";
-import React from "react";
-import { useTranslation } from "react-i18next";
-
-interface OscillatorState {
-  active: boolean;
-  frequency: number;
-  amplitude: number;
-  offset: number;
-  phaseShift: number;
-  startTime: number;
-}
-
-interface ConfigPart {
-  type: "arm" | "body";
-  isMovable: boolean;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  child?: ConfigPart;
-}
-
-interface EdmoConfig {
-  id: string;
-  name: string;
-  file: string;
-  parts: ConfigPart[];
-}
-
-interface MeshProps {
-  position?: [number, number, number];
-  rotation?: [number, number, number];
-  children?: React.ReactNode;
-}
-
-const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
-  ({ position, rotation, children, ...rest }, ref) => {
-    const armSrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Arm.obj");
-    const arm = useMemo(() => {
-      const cloned = armSrc.clone(true);
-      cloned.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
-            metalness: 0.3,
-            roughness: 1,
-          });
-        }
-      });
-      return cloned;
-    }, [armSrc]);
-    return (
-      <group ref={ref} position={position} rotation={rotation}>
-        <primitive {...rest} object={arm} />
-        {children}
-      </group>
-    );
-  }
-);
-
-const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(
-  ({ position, rotation, children, ...rest }, ref) => {
-    const bodySrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Body.obj");
-    const body = useMemo(() => {
-      const cloned = bodySrc.clone(true);
-      cloned.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
-            metalness: 0.3,
-            roughness: 1,
-          });
-        }
-      });
-      return cloned;
-    }, [bodySrc]);
-    return (
-      <group ref={ref} position={position} rotation={rotation}>
-        <primitive {...rest} object={body} />
-        {children}
-      </group>
-    );
-  }
-);
-
-function lerpAngle(a: number, b: number, t: number): number {
-  const delta = Math.atan2(Math.sin(b - a), Math.cos(b - a));
-  return a + delta * THREE.MathUtils.clamp(t, 0, 1);
-}
-
-function easeInOutCubic(t: number): number {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
+} from "../simulationControls";
+import type { ConfigPart, OscillatorState, AnimationState } from "./types";
+import { lerpAngle, easeInOutCubic } from "./animations";
+import { EDMO_Arm, EDMO_Body } from "./EdmoMeshes";
+import GizmoControls from "./GizmoControls";
 
 interface SceneProps {
   parts: ConfigPart[];
+  container: HTMLDivElement | null;
 }
 
-// Flatten all parts including nested children into a single array
 function flattenParts(parts: ConfigPart[]): ConfigPart[] {
   const result: ConfigPart[] = [];
 
@@ -123,23 +30,15 @@ function flattenParts(parts: ConfigPart[]): ConfigPart[] {
   return result;
 }
 
-function Scene({ parts }: SceneProps) {
+function Scene({ parts, container }: SceneProps) {
   const flattenedParts = useMemo(() => flattenParts(parts), [parts]);
 
   const partRefs = useRef<THREE.Group[]>([]);
   const initialRotations = useRef<THREE.Euler[]>([]);
-  const anim = useRef<
-    {
-      running: boolean;
-      start: number;
-      dur: number;
-      from: THREE.Euler;
-      to: THREE.Euler;
-    }[]
-  >([]);
-
+  const anim = useRef<AnimationState[]>([]);
   const oscillators = useRef<OscillatorState[]>([]);
 
+  // Initialize refs arrays when parts change
   useEffect(() => {
     const len = flattenedParts.length;
 
@@ -314,12 +213,14 @@ function Scene({ parts }: SceneProps) {
     [flattenedParts]
   );
 
+  // Register control callbacks
   React.useEffect(() => {
     registerSetArmAngle(setArmAngleInternal);
     registerSetOscillator(setOscillatorInternal);
     registerStopOscillator(stopOscillatorInternal);
   }, [setArmAngleInternal, setOscillatorInternal, stopOscillatorInternal]);
 
+  // Animation frame loop
   useFrame(() => {
     const now = performance.now();
 
@@ -370,6 +271,7 @@ function Scene({ parts }: SceneProps) {
   });
 
   let partIndex = 0;
+
   // Recursive function to render a part and its children
   const renderPart = (part: ConfigPart, key: string): React.ReactNode => {
     const currentIndex = partIndex++;
@@ -431,7 +333,7 @@ function Scene({ parts }: SceneProps) {
 
       <hemisphereLight args={[0x87ceeb, 0x362d1e]} />
 
-      <OrbitControls />
+      <GizmoControls container={container} />
 
       <group>
         {parts.map((part: ConfigPart, index: number) =>
@@ -442,102 +344,4 @@ function Scene({ parts }: SceneProps) {
   );
 }
 
-interface SimulationProps {
-  configId: string;
-  onConfigChange: (configId: string) => void;
-}
-
-function Simulation({ configId, onConfigChange }: SimulationProps) {
-  const { t } = useTranslation();
-  const [configurations, setConfigurations] = useState<EdmoConfig[]>([]);
-  const configIdRef = React.useRef(configId);
-  const onConfigChangeRef = React.useRef(onConfigChange);
-
-  React.useEffect(() => {
-    configIdRef.current = configId;
-    onConfigChangeRef.current = onConfigChange;
-  }, [configId, onConfigChange]);
-
-  useEffect(() => {
-    const loadConfigurations = async () => {
-      try {
-        const manifestRes = await fetch(
-          "/EDMO-IDE/edmoConfigurations/manifest.json"
-        );
-        const fileList: string[] = await manifestRes.json();
-
-        const configs = await Promise.all(
-          fileList.map(async (file) => {
-            const res = await fetch(`/EDMO-IDE/edmoConfigurations/${file}`);
-            const data = await res.json();
-            return { ...data, file } as EdmoConfig;
-          })
-        );
-
-        setConfigurations(configs);
-        if (configs.length > 0 && configIdRef.current === "") {
-          onConfigChangeRef.current(configs[0].id);
-        }
-      } catch {
-        setConfigurations([]);
-      }
-    };
-    loadConfigurations();
-  }, []);
-
-  const selectedConfig = configurations.find((c) => c.id === configId);
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <div
-        style={{
-          position: "absolute",
-          top: 8,
-          left: 8,
-          zIndex: 10,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-        }}
-      >
-        <label
-          htmlFor="config-select"
-          style={{
-            color: "var(--muted)",
-            fontSize: "0.75rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-          }}
-        >
-          {t("simulation.configselector")}:
-        </label>
-        <select
-          id="config-select"
-          value={configId}
-          onChange={(e) => onConfigChange(e.target.value)}
-          style={{
-            background: "var(--panel-2)",
-            color: "var(--text)",
-            border: "1px solid #444",
-            borderRadius: "var(--radius)",
-            padding: "4px 8px",
-            fontSize: "0.8rem",
-            cursor: "pointer",
-            outline: "none",
-          }}
-        >
-          {configurations.map((cfg) => (
-            <option key={cfg.id} value={cfg.id}>
-              {cfg.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <Canvas shadows camera={{ position: [0, 5, 5] }}>
-        <Scene parts={selectedConfig?.parts ?? []} />
-      </Canvas>
-    </div>
-  );
-}
-
-export default Simulation;
+export default Scene;
