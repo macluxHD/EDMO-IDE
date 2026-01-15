@@ -47,6 +47,7 @@ export default {
           type: "start",
         },
         {
+          kind: "block",
           type: "set_oscillator",
           inputs: {
             SERVO_ID: {
