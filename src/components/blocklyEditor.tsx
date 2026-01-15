@@ -38,13 +38,13 @@ export default function BlocklyEditor({
       name: "edmoTheme",
       base: Blockly.Themes.Classic,
       componentStyles: {
-        workspaceBackgroundColour: "#1e1e1e",
-        toolboxBackgroundColour: "#1e1e1e",
-        toolboxForegroundColour: "#ffffff",
-        flyoutBackgroundColour: "#1e1e1e",
-        flyoutForegroundColour: "#ffffff",
+        workspaceBackgroundColour: "#f6f7f9",
+        toolboxBackgroundColour: "#e7e7e7",
+        toolboxForegroundColour: "#222222",
+        flyoutBackgroundColour: "#f1f1f1",
+        flyoutForegroundColour: "#222222",
         flyoutOpacity: 1,
-        scrollbarColour: "#555555",
+        scrollbarColour: "#a8a8a8",
         scrollbarOpacity: 0.7,
         insertionMarkerColour: "#df2323",
         insertionMarkerOpacity: 0.5,
@@ -80,18 +80,18 @@ export default function BlocklyEditor({
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
     };
   }, [version]);
 
   const handleWorkspaceChange = (workspace: Blockly.Workspace) => {
     onWorkspaceChange(workspace);
-    
+
     // Force reposition UI elements after zoom/scroll
     if (workspace instanceof Blockly.WorkspaceSvg) {
       setTimeout(() => {
@@ -134,44 +134,22 @@ export default function BlocklyEditor({
             theme: edmoTheme,
             renderer: "geras",
             grid: { spacing: 24, length: 3, colour: "#3a3a3a", snap: true },
-            zoom: { 
-              controls: true, 
+            zoom: {
+              controls: true,
               wheel: true,
               startScale: 1.0,
               maxScale: 2.0,
               minScale: 0.5,
               scaleSpeed: 1.1,
-              pinch: true
+              pinch: true,
             },
             move: { scrollbars: true, drag: true, wheel: true },
-            trashcan: true,
             maxTrashcanContents: 32,
           }}
           onWorkspaceChange={handleWorkspaceChange}
           onXmlChange={onXmlChange}
         />
       </div>
-
-      <style>{`
-        .blocklyTrash {
-          opacity: 1 !important;
-          filter: brightness(1.5) contrast(1.2);
-          z-index: 100 !important;
-        }
-        
-        .blocklyTrash.blocklyTrashOpen {
-          opacity: 1 !important;
-          filter: brightness(1.8) contrast(1.3);
-        }
-        
-        .blocklyTrash image {
-          filter: drop-shadow(0 0 4px rgba(255, 253, 253, 1));
-        }
-        
-        .blocklyZoom {
-          z-index: 100 !important;
-        }
-      `}</style>
     </div>
   );
 }
