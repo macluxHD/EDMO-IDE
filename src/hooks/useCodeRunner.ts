@@ -128,6 +128,17 @@ function runCode(
   }
 }
 
+function extractFunctionDefinitions(code: string): string {
+  const functionDefRegex =
+    /^(\/\/[^\n]*\n)?function\s+\w+\s*\([^)]*\)\s*\{[\s\S]*?\n\}\n*/gm;
+  const functionDefs: string[] = [];
+  let match;
+  while ((match = functionDefRegex.exec(code)) !== null) {
+    functionDefs.push(match[0]);
+  }
+  return functionDefs.join("\n");
+}
+
 export function useCodeRunner() {
   const { t } = useTranslation();
   const { infiniteLoopState, handleInfiniteLoopDetection, handleCloseWarning } =
@@ -135,24 +146,32 @@ export function useCodeRunner() {
 
   const runCodes = async (workspace: Blockly.Workspace) => {
     const allBlocks = workspace.getAllBlocks(false);
-    const startBlock = allBlocks.filter((block) => block.type === "start");
+    const startBlocks = allBlocks.filter((block) => block.type === "start");
 
-    if (startBlock.length === 0) return;
+    if (startBlocks.length === 0) return;
 
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
     javascriptGenerator.STATEMENT_PREFIX = "highlightBlock(%1);\n";
     javascriptGenerator.addReservedWords("highlightBlock");
 
-    const codes = startBlock.map((block) => {
+    const fullCode = javascriptGenerator.workspaceToCode(workspace);
+    const definitions = extractFunctionDefinitions(fullCode);
+
+    const codes = startBlocks.map((block) => {
+      javascriptGenerator.init(workspace);
       const code = javascriptGenerator.blockToCode(block);
-      return Array.isArray(code) ? code[0] : code;
+      const blockCode = Array.isArray(code) ? code[0] : code;
+      return definitions + blockCode;
     });
+
     javascriptGenerator.INFINITE_LOOP_TRAP = null;
     javascriptGenerator.STATEMENT_PREFIX = null;
 
     for (const code of codes) {
-      runCode(code, handleInfiniteLoopDetection, workspace);
+      if (code.trim()) {
+        runCode(code, handleInfiniteLoopDetection, workspace);
+      }
     }
   };
 
