@@ -4,6 +4,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import * as NL from "blockly/msg/nl";
 import * as FR from "blockly/msg/fr";
 import * as DE from "blockly/msg/de";
+import * as EN from "blockly/msg/en";
 import * as Blockly from "blockly";
 
 const localeKeys = ["nl", "en", "fr", "de"];
@@ -50,6 +51,10 @@ function setBlocklyLocale(langCode: string) {
     case "de":
       // @ts-expect-error - Blockly namespace import type mismatch
       Blockly.setLocale(DE);
+      break;
+    case "en":
+      // @ts-expect-error - Blockly namespace import type mismatch
+      Blockly.setLocale(EN);
       break;
   }
 }
