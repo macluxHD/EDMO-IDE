@@ -144,7 +144,9 @@ function App() {
           className="side-panels"
           ref={sideRef}
           style={{
-            gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%`,
+            gridTemplateRows: `minmax(0, ${simFrac}fr) 6px minmax(0, ${
+              1 - simFrac
+            }fr)`,
           }}
         >
           <section className="panel">
