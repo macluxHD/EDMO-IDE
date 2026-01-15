@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { BlocklyWorkspace } from "@kuband/react-blockly";
 import * as Blockly from "blockly";
 import Toolbox from "../toolbox";
@@ -38,13 +38,13 @@ export default function BlocklyEditor({
       name: "edmoTheme",
       base: Blockly.Themes.Classic,
       componentStyles: {
-        workspaceBackgroundColour: "#f6f7f9",
-        toolboxBackgroundColour: "#e7e7e7",
-        toolboxForegroundColour: "#222222",
-        flyoutBackgroundColour: "#f1f1f1",
-        flyoutForegroundColour: "#222222",
+        workspaceBackgroundColour: "#1e1e1e",
+        toolboxBackgroundColour: "#1e1e1e",
+        toolboxForegroundColour: "#ffffff",
+        flyoutBackgroundColour: "#1e1e1e",
+        flyoutForegroundColour: "#ffffff",
         flyoutOpacity: 1,
-        scrollbarColour: "#a8a8a8",
+        scrollbarColour: "#555555",
         scrollbarOpacity: 0.7,
         insertionMarkerColour: "#df2323",
         insertionMarkerOpacity: 0.5,
@@ -70,6 +70,35 @@ export default function BlocklyEditor({
     };
     return Blockly.Theme.defineTheme("edmoTheme", opts);
   }, []);
+
+  // Handle window resize to reposition trashcan
+  useEffect(() => {
+    const handleResize = () => {
+      const workspace = Blockly.getMainWorkspace();
+      if (workspace) {
+        Blockly.svgResize(workspace as Blockly.WorkspaceSvg);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, [version]);
+
+  const handleWorkspaceChange = (workspace: Blockly.Workspace) => {
+    onWorkspaceChange(workspace);
+    
+    // Force reposition UI elements after zoom/scroll
+    if (workspace instanceof Blockly.WorkspaceSvg) {
+      setTimeout(() => {
+        workspace.resize();
+      }, 100);
+    }
+  };
 
   return (
     <div className="editor-wrapper">
@@ -104,14 +133,45 @@ export default function BlocklyEditor({
           workspaceConfiguration={{
             theme: edmoTheme,
             renderer: "geras",
-            grid: { spacing: 24, length: 3, colour: "#5f5f5fff", snap: true },
-            zoom: { controls: true, wheel: true },
+            grid: { spacing: 24, length: 3, colour: "#3a3a3a", snap: true },
+            zoom: { 
+              controls: true, 
+              wheel: true,
+              startScale: 1.0,
+              maxScale: 2.0,
+              minScale: 0.5,
+              scaleSpeed: 1.1,
+              pinch: true
+            },
             move: { scrollbars: true, drag: true, wheel: true },
+            trashcan: true,
+            maxTrashcanContents: 32,
           }}
-          onWorkspaceChange={onWorkspaceChange}
+          onWorkspaceChange={handleWorkspaceChange}
           onXmlChange={onXmlChange}
         />
       </div>
+
+      <style>{`
+        .blocklyTrash {
+          opacity: 1 !important;
+          filter: brightness(1.5) contrast(1.2);
+          z-index: 100 !important;
+        }
+        
+        .blocklyTrash.blocklyTrashOpen {
+          opacity: 1 !important;
+          filter: brightness(1.8) contrast(1.3);
+        }
+        
+        .blocklyTrash image {
+          filter: drop-shadow(0 0 4px rgba(255, 253, 253, 1));
+        }
+        
+        .blocklyZoom {
+          z-index: 100 !important;
+        }
+      `}</style>
     </div>
   );
 }
