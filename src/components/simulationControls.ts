@@ -12,7 +12,6 @@ export type SetOscillatorFunction = (options?: {
   amplitude: number;
   offset: number;
   phaseShift: number;
-  phase: number;
 }) => void;
 
 export type StopOscillatorFunction = (index: number) => void;
@@ -51,8 +50,7 @@ export const setOscillator: SetOscillatorFunction = (options) => {
       options.frequency,
       options.amplitude,
       options.offset,
-      options.phaseShift,
-      options.phase
+      options.phaseShift
     );
   }
 };

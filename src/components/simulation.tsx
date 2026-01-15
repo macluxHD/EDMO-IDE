@@ -17,7 +17,6 @@ interface OscillatorState {
   amplitude: number;
   offset: number;
   phaseShift: number;
-  phase: number;
   startTime: number;
 }
 
@@ -147,7 +146,6 @@ function Scene({ parts }: SceneProps) {
           amplitude: 0,
           offset: 0,
           phaseShift: 0,
-          phase: 0,
           startTime: 0,
         }
     );
@@ -230,11 +228,9 @@ function Scene({ parts }: SceneProps) {
       amplitude: number;
       offset: number;
       phaseShift: number;
-      phase: number;
     }) => {
       if (!options) return;
-      const { index, frequency, amplitude, offset, phaseShift, phase } =
-        options;
+      const { index, frequency, amplitude, offset, phaseShift } = options;
 
       const movableParts = flattenedParts
         .map((part, i) => (part.isMovable ? i : -1))
@@ -263,11 +259,10 @@ function Scene({ parts }: SceneProps) {
       osc.amplitude = amplitude;
       osc.offset = offset;
       osc.phaseShift = phaseShift;
-      osc.phase = phase;
       osc.startTime = performance.now();
 
       console.log(
-        `Oscillator started for servo ${index}: freq=${frequency}, amp=${amplitude}, offset=${offset}, phaseShift=${phaseShift}, phase=${phase}`
+        `Oscillator started for servo ${index}: freq=${frequency}, amp=${amplitude}, offset=${offset}, phaseShift=${phaseShift}`
       );
     },
     [flattenedParts]
@@ -312,12 +307,10 @@ function Scene({ parts }: SceneProps) {
       if (osc && osc.active && part.isMovable) {
         const t = (now - osc.startTime) / 1000;
 
-        // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phase + phaseShift) + offset
+        // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-            Math.sin(
-              2 * Math.PI * osc.frequency * t + osc.phase + osc.phaseShift
-            ) +
+            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
         const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);

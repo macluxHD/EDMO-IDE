@@ -14,7 +14,6 @@ export interface SetOscillatorData {
   amplitude: number;
   offset: number;
   phaseShift: number;
-  phase: number;
 }
 
 class WebSocketService {
@@ -120,8 +119,7 @@ class WebSocketService {
     frequency: number,
     amplitude: number,
     offset: number,
-    phaseShift: number,
-    phase: number
+    phaseShift: number
   ): boolean {
     return this.sendMessage<SetOscillatorData>("setOscillator", {
       index,
@@ -129,7 +127,6 @@ class WebSocketService {
       amplitude,
       offset,
       phaseShift,
-      phase,
     });
   }
 

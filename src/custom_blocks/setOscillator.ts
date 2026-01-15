@@ -4,7 +4,7 @@ import { setOscillator } from "../components/simulationControls";
 import type Interpreter from "js-interpreter";
 import i18next from "../i18n";
 
-// Sets oscillators frequency, amplitude, offset, phase shift and phase for servo x
+// Sets oscillators frequency, amplitude, offset and phase shift for servo x
 Blockly.Blocks["set_oscillator"] = {
   init: function () {
     this.setColour("#5e3c58");
@@ -25,9 +25,6 @@ Blockly.Blocks["set_oscillator"] = {
     this.appendValueInput("PHASE_SHIFT")
       .setCheck("Number")
       .appendField(i18next.t("setOscillator.phaseShift"));
-    this.appendValueInput("PHASE")
-      .setCheck("Number")
-      .appendField(i18next.t("setOscillator.phase"));
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
   },
@@ -43,8 +40,7 @@ javascriptGenerator.forBlock["set_oscillator"] = function (block) {
   const offsetCode = javascriptGenerator.valueToCode(block, "OFFSET", 0) || "0";
   const phaseShiftCode =
     javascriptGenerator.valueToCode(block, "PHASE_SHIFT", 0) || "0";
-  const phaseCode = javascriptGenerator.valueToCode(block, "PHASE", 0) || "0";
-  const code = `setOscillator(${servoIdCode}, ${frequencyCode}, ${amplitudeCode}, ${offsetCode}, ${phaseShiftCode}, ${phaseCode});\n`;
+  const code = `setOscillator(${servoIdCode}, ${frequencyCode}, ${amplitudeCode}, ${offsetCode}, ${phaseShiftCode});\n`;
   return code;
 };
 
@@ -60,11 +56,10 @@ export function initInterpreterSetOscillator(
     frequency: number,
     amplitude: number,
     offset: number,
-    phaseShift: number,
-    phase: number
+    phaseShift: number
   ) {
     console.log(
-      `setOscillator called with id=${servoId}, frequency=${frequency}, amplitude=${amplitude}, offset=${offset}, phaseShift=${phaseShift}, phase=${phase}`
+      `setOscillator called with id=${servoId}, frequency=${frequency}, amplitude=${amplitude}, offset=${offset}, phaseShift=${phaseShift}`
     );
     setOscillator({
       index: servoId,
@@ -72,7 +67,6 @@ export function initInterpreterSetOscillator(
       amplitude: amplitude,
       offset: offset,
       phaseShift: phaseShift,
-      phase: phase,
     });
   });
   interpreter.setProperty(globalObject, "setOscillator", wrapper);

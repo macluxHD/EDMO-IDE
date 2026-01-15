@@ -40,8 +40,7 @@
     "frequency": "fréquence",
     "amplitude": "amplitude",
     "offset": "offset",
-    "phaseShift": "déphasage",
-    "phase": "phase"
+    "phaseShift": "déphasage"
   },
   "sleep": {
     "tooltip": "Met le programme en pause pendant le nombre de secondes spécifié.",

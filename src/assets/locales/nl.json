@@ -40,8 +40,7 @@
     "frequency": "frequentie",
     "amplitude": "amplitude",
     "offset": "offset",
-    "phaseShift": "faseverschuiving",
-    "phase": "fase"
+    "phaseShift": "faseverschuiving"
   },
   "sleep": {
     "tooltip": "Pauzeert de uitvoering van de code voor het aantal opgegeven seconden.",

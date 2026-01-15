@@ -40,8 +40,7 @@
     "frequency": "Frequenz",
     "amplitude": "Amplitude",
     "offset": "Versatz",
-    "phaseShift": "Phasenverschiebung",
-    "phase": "Phase"
+    "phaseShift": "Phasenverschiebung"
   },
   "sleep": {
     "tooltip": "Pausiert die Codeausführung für die angegebenen Sekunden.",

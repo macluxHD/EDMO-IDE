@@ -90,14 +90,6 @@ export default {
                 },
               },
             },
-            PHASE: {
-              shadow: {
-                type: "math_number",
-                fields: {
-                  NUM: 0,
-                },
-              },
-            },
           },
         },
       ],
