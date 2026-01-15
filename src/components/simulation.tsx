@@ -44,7 +44,21 @@ interface MeshProps {
 const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
   ({ position, rotation, children, ...rest }, ref) => {
     const armSrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Arm.obj");
-    const arm = useMemo(() => armSrc.clone(true), [armSrc]);
+    const arm = useMemo(() => {
+      const cloned = armSrc.clone(true);
+      cloned.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          child.material = new THREE.MeshStandardMaterial({
+            color: 0xff0000,
+            metalness: 0.3,
+            roughness: 1,
+          });
+        }
+      });
+      return cloned;
+    }, [armSrc]);
     return (
       <group ref={ref} position={position} rotation={rotation}>
         <primitive {...rest} object={arm} />
@@ -57,7 +71,21 @@ const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
 const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(
   ({ position, rotation, children, ...rest }, ref) => {
     const bodySrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Body.obj");
-    const body = useMemo(() => bodySrc.clone(true), [bodySrc]);
+    const body = useMemo(() => {
+      const cloned = bodySrc.clone(true);
+      cloned.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          child.material = new THREE.MeshStandardMaterial({
+            color: 0xff0000,
+            metalness: 0.3,
+            roughness: 1,
+          });
+        }
+      });
+      return cloned;
+    }, [bodySrc]);
     return (
       <group ref={ref} position={position} rotation={rotation}>
         <primitive {...rest} object={body} />
@@ -381,15 +409,28 @@ function Scene({ parts }: SceneProps) {
 
   return (
     <>
-      <ambientLight intensity={Math.PI / 2} />
-      <spotLight
-        position={[10, 10, 10]}
-        angle={0.15}
-        penumbra={1}
-        decay={0}
-        intensity={Math.PI}
+      {/* Ambient light for base illumination */}
+      <ambientLight intensity={1} />
+
+      {/* Main directional light with shadows */}
+      <directionalLight
+        position={[5, 10, 5]}
+        intensity={1.2}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={50}
+        shadow-camera-left={-10}
+        shadow-camera-right={10}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10}
       />
-      <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
+
+      {/* Fill light from opposite side */}
+      <directionalLight position={[-5, 5, -5]} intensity={0.5} />
+
+      <hemisphereLight args={[0x87ceeb, 0x362d1e]} />
+
       <OrbitControls />
 
       <group>
@@ -492,7 +533,7 @@ function Simulation({ configId, onConfigChange }: SimulationProps) {
           ))}
         </select>
       </div>
-      <Canvas camera={{ position: [0, 5, 5] }}>
+      <Canvas shadows camera={{ position: [0, 5, 5] }}>
         <Scene parts={selectedConfig?.parts ?? []} />
       </Canvas>
     </div>
