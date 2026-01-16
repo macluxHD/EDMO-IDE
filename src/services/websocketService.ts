@@ -130,6 +130,10 @@ class WebSocketService {
     });
   }
 
+  resetPhase(): boolean {
+    return this.sendMessage("reset_phase", {});
+  }
+
   disconnect() {
     if (this.socket) {
       this.socket.close();

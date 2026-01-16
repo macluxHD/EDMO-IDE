@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import "../custom_blocks/start";
 import { t } from "i18next";
 import { initInterpreterSetOscillator } from "../custom_blocks/setOscillator";
+import { robotWebSocket } from "../services/websocketService";
 
 const interpreters = new Map<string, Interpreter | null>();
 const highlightedBlocks = new Map<string, string | null>();
@@ -151,6 +152,8 @@ export function useCodeRunner() {
     const startBlocks = allBlocks.filter((block) => block.type === "start");
 
     if (startBlocks.length === 0) return;
+
+    robotWebSocket.resetPhase();
 
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
