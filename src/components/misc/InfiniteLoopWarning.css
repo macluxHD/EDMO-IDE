@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,14 +23,14 @@
 }
 
 .loop-modal-content {
-  background: #2a2a2a;
+  background: #ffffff;
   border-radius: 12px;
   padding: 32px;
   max-width: 480px;
   width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   animation: slideUp 0.3s ease-out;
-  border: 2px solid #5e3c58;
+  border: 2px solid #c9a0b8;
   text-align: center;
 }
 
@@ -53,36 +53,36 @@
 
 .loop-modal-title {
   margin: 0 0 16px 0;
-  color: #ffffff;
+  color: #1a1a1a;
   font-size: 1.5rem;
   font-weight: 600;
 }
 
 .loop-modal-message {
   margin: 0 0 12px 0;
-  color: #e0e0e0;
+  color: #333;
   line-height: 1.6;
   font-size: 1rem;
 }
 
 .loop-modal-hint {
   margin: 16px 0 8px 0;
-  color: #b0b0b0;
+  color: #666;
   font-size: 0.9rem;
 }
 
 .loop-modal-code {
-  background: #1a1a1a;
+  background: #f5f5f5;
   padding: 16px;
   border-radius: 8px;
   overflow-x: auto;
   margin: 12px 0 24px 0;
-  border: 1px solid #3d3d3d;
+  border: 1px solid #e0e0e0;
   text-align: left;
 }
 
 .loop-modal-code code {
-  color: #f0f0f0;
+  color: #383a42;
   font-family: 'Courier New', Consolas, monospace;
   font-size: 0.85rem;
   line-height: 1.5;
@@ -96,15 +96,15 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: #5e3c58;
+  background: #7a4f72;
   color: white;
   min-width: 120px;
 }
 
 .loop-modal-btn:hover {
-  background: #7a4f72;
+  background: #8f5f85;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(94, 60, 88, 0.4);
+  box-shadow: 0 4px 12px rgba(122, 79, 114, 0.35);
 }
 
 .loop-modal-btn:active {
