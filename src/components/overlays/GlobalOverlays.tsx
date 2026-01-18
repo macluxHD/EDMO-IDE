@@ -33,7 +33,7 @@ export default function GlobalOverlays({
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </>
   );

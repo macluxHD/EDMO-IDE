@@ -54,7 +54,7 @@ function ResetCameraButton({ controlsRef, onUpdate }: ResetCameraButtonProps) {
         transform: "none",
       }}
       calculatePosition={() => [size.width - 52, size.height - 52]}
-      zIndexRange={[1001, 1001]}
+      zIndexRange={[99, 99]}
     >
       <button
         onClick={handleReset}
@@ -63,21 +63,22 @@ function ResetCameraButton({ controlsRef, onUpdate }: ResetCameraButtonProps) {
           width: "36px",
           height: "36px",
           borderRadius: "50%",
-          border: "1px solid #555",
-          background: "rgba(50, 50, 50, 0.8)",
-          color: "#fff",
+          border: "1px solid #ccc",
+          background: "rgba(255, 255, 255, 0.9)",
+          color: "#333",
           fontSize: "18px",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           transition: "background 0.2s",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(80, 80, 80, 0.9)";
+          e.currentTarget.style.background = "rgba(245, 245, 245, 0.95)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(50, 50, 50, 0.8)";
+          e.currentTarget.style.background = "rgba(255, 255, 255, 0.9)";
         }}
       >
         ⌂
