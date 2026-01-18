@@ -8,7 +8,7 @@ import {
 } from "../simulationControls";
 import type { ConfigPart, OscillatorState, AnimationState } from "./types";
 import { lerpAngle, easeInOutCubic } from "./animations";
-import { EDMO_Arm, EDMO_Body } from "./EdmoMeshes";
+import { EDMO_Arm, EDMO_Body, EDMO_ArmV2, EDMO_BodyV2 } from "./EdmoMeshes";
 import GizmoControls from "./GizmoControls";
 
 interface SceneProps {
@@ -239,7 +239,7 @@ function Scene({ parts, container }: SceneProps) {
         // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+          Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
         const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
@@ -304,6 +304,32 @@ function Scene({ parts, container }: SceneProps) {
         >
           {childElement}
         </EDMO_Body>
+      );
+    } else if (part.type === "armv2") {
+      return (
+        <EDMO_ArmV2
+          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+            setPartRef(el, currentIndex)
+          }
+          key={key}
+          position={part.position}
+          rotation={part.rotation}
+        >
+          {childElement}
+        </EDMO_ArmV2>
+      );
+    } else if (part.type === "bodyv2") {
+      return (
+        <EDMO_BodyV2
+          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+            setPartRef(el, currentIndex)
+          }
+          key={key}
+          position={part.position}
+          rotation={part.rotation}
+        >
+          {childElement}
+        </EDMO_BodyV2>
       );
     }
     return null;

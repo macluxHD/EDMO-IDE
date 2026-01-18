@@ -1,0 +1,54 @@
+{
+  "id": "starfish",
+  "name": "Starfish",
+  "parts": [
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "position": [5.285, 0, 0],
+      "rotation": [0, 0, 0]
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [5.285, 0, 0],
+      "rotation": [0, 0, 0]
+    },
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "position": [0, 0, -5.285],
+      "rotation": [0, 1.570796327, 0]
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [0, 0, -5.285],
+      "rotation": [0, 1.570796327, 0]
+    },
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "position": [-5.285, 0, 0],
+      "rotation": [0, 3.141592654, 0]
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [-5.285, 0, 0],
+      "rotation": [0, 3.141592654, 0]
+    },
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "position": [0, 0, 5.285],
+      "rotation": [0, -1.570796327, 0]
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [0, 0, 5.285],
+      "rotation": [0, -1.570796327, 0]
+    }
+  ]
+}

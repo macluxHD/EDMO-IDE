@@ -10,7 +10,7 @@ export interface OscillatorState {
 }
 
 export interface ConfigPart {
-  type: "arm" | "body";
+  type: "arm" | "body" | "armv2" | "bodyv2";
   isMovable: boolean;
   position: [number, number, number];
   rotation: [number, number, number];
