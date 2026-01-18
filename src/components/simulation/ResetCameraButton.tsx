@@ -54,7 +54,7 @@ function ResetCameraButton({ controlsRef, onUpdate }: ResetCameraButtonProps) {
         transform: "none",
       }}
       calculatePosition={() => [size.width - 52, size.height - 52]}
-      zIndexRange={[1001, 1001]}
+      zIndexRange={[99, 99]}
     >
       <button
         onClick={handleReset}
