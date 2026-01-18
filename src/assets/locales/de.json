@@ -1,6 +1,8 @@
 {
   "run": "Ausführen",
   "stop": "Stop",
+  "undo": "Rückgängig",
+  "redo": "Wiederherstellen",
   "save": {
     "button": "Speichern",
     "success": "Erfolgreich gespeichert",

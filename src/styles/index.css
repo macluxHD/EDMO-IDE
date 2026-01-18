@@ -118,10 +118,42 @@ body,
   object-fit: contain;
 }
 
+.toolbar-icons-left {
+  position: absolute;
+  left: 100px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.toolbar-icons-left button {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.toolbar-icons-left button:hover:not(:disabled) {
+  background: var(--accent);
+}
+.toolbar-icons-left button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .toolbar-buttons {
   display: flex;
   gap: 12px;
   align-items: center;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 28px;
+  background: #555;
+  opacity: 0.5;
 }
 
 .toolbar-buttons button {
@@ -132,12 +164,28 @@ body,
   border-radius: var(--radius);
   font-size: 0.85rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .toolbar-buttons button:hover {
   background: var(--accent);
 }
+.toolbar-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-/* Canvas fills the rest */
+.icon-button {
+  width: 32px;
+  height: 32px;
+  padding: 0 !important;
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+}
 .editor-canvas {
   flex: 1; /* take remaining space */
   min-height: 0;

@@ -1,6 +1,8 @@
 {
   "run": "Run",
   "stop": "Stop",
+  "undo": "Undo",
+  "redo": "Redo",
   "save": {
     "button": "Save as file",
     "success": "Workspace saved successfully",

@@ -129,6 +129,7 @@ function App() {
         <BlocklyEditor
           xml={xml}
           version={version}
+          workspace={workspace}
           onWorkspaceChange={workspaceDidChange}
           onXmlChange={setXml}
           onRunCode={handleRunCode}

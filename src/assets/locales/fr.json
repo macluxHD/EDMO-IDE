@@ -1,6 +1,8 @@
 {
   "run": "Exécuter",
   "stop": "Stop",
+  "undo": "Annuler",
+  "redo": "Rétablir",
   "save": {
     "button": "Sauvgarder",
     "success": "Sauvgardé avec succès",
