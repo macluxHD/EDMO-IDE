@@ -72,7 +72,7 @@ function App() {
   }
   const handleRunCode = () => {
     if (workspace) {
-      stopCode(workspace);
+      stopCode(workspace, false); // Don't reset limbs when stopping to restart
       runCodes(workspace);
     }
   };
@@ -133,7 +133,7 @@ function App() {
           onWorkspaceChange={workspaceDidChange}
           onXmlChange={setXml}
           onRunCode={handleRunCode}
-          onStopCode={() => workspace && stopCode(workspace)}
+          onStopCode={() => workspace && stopCode(workspace, true)}
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
           onReloadWorkspace={reloadWorkspace}

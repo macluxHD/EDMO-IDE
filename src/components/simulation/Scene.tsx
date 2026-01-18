@@ -5,6 +5,7 @@ import {
   registerSetArmAngle,
   registerSetOscillator,
   registerStopOscillator,
+  registerGetMovablePartsCount,
 } from "../simulationControls";
 import type { ConfigPart, OscillatorState, AnimationState } from "./types";
 import { lerpAngle, easeInOutCubic } from "./animations";
@@ -44,12 +45,12 @@ function Scene({ parts, container }: SceneProps) {
 
     partRefs.current = Array.from(
       { length: len },
-      (_, i) => partRefs.current[i] ?? new THREE.Group()
+      (_, i) => partRefs.current[i] ?? new THREE.Group(),
     );
 
     initialRotations.current = Array.from(
       { length: len },
-      (_, i) => initialRotations.current[i] ?? new THREE.Euler()
+      (_, i) => initialRotations.current[i] ?? new THREE.Euler(),
     );
 
     anim.current = Array.from(
@@ -61,7 +62,7 @@ function Scene({ parts, container }: SceneProps) {
           dur: 0.6,
           from: new THREE.Euler(),
           to: new THREE.Euler(),
-        }
+        },
     );
 
     oscillators.current = Array.from(
@@ -74,7 +75,7 @@ function Scene({ parts, container }: SceneProps) {
           offset: 0,
           phaseShift: 0,
           startTime: 0,
-        }
+        },
     );
   }, [flattenedParts]);
 
@@ -87,12 +88,12 @@ function Scene({ parts, container }: SceneProps) {
           initialRotations.current[index] = new THREE.Euler(
             part.rotation[0],
             part.rotation[1],
-            part.rotation[2]
+            part.rotation[2],
           );
         }
       }
     },
-    [flattenedParts]
+    [flattenedParts],
   );
 
   const setArmAngleInternal = useCallback(
@@ -115,7 +116,7 @@ function Scene({ parts, container }: SceneProps) {
 
       if (!armRef || !anim.current[actualIndex] || !initialRotation) {
         console.warn(
-          `armRef, anim state, or initial rotation not found for actualIndex=${actualIndex}`
+          `armRef, anim state, or initial rotation not found for actualIndex=${actualIndex}`,
         );
         return;
       }
@@ -134,7 +135,7 @@ function Scene({ parts, container }: SceneProps) {
       state.to.set(
         initialRotation.x,
         initialRotation.y,
-        initialRotation.z + rad
+        initialRotation.z + rad,
       );
 
       state.start = performance.now();
@@ -145,7 +146,7 @@ function Scene({ parts, container }: SceneProps) {
         r.set(state.to.x, state.to.y, state.to.z);
       }
     },
-    [flattenedParts]
+    [flattenedParts],
   );
 
   const setOscillatorInternal = useCallback(
@@ -171,7 +172,7 @@ function Scene({ parts, container }: SceneProps) {
 
       if (!oscillators.current[actualIndex]) {
         console.warn(
-          `Oscillator state not found for actualIndex=${actualIndex}`
+          `Oscillator state not found for actualIndex=${actualIndex}`,
         );
         return;
       }
@@ -189,10 +190,10 @@ function Scene({ parts, container }: SceneProps) {
       osc.startTime = performance.now();
 
       console.log(
-        `Oscillator started for servo ${index}: freq=${frequency}, amp=${amplitude}, offset=${offset}, phaseShift=${phaseShift}`
+        `Oscillator started for servo ${index}: freq=${frequency}, amp=${amplitude}, offset=${offset}, phaseShift=${phaseShift}`,
       );
     },
-    [flattenedParts]
+    [flattenedParts],
   );
 
   const stopOscillatorInternal = useCallback(
@@ -210,15 +211,25 @@ function Scene({ parts, container }: SceneProps) {
         oscillators.current[actualIndex].active = false;
       }
     },
-    [flattenedParts]
+    [flattenedParts],
   );
+
+  const getMovablePartsCountInternal = useCallback(() => {
+    return flattenedParts.filter((part) => part.isMovable).length;
+  }, [flattenedParts]);
 
   // Register control callbacks
   React.useEffect(() => {
     registerSetArmAngle(setArmAngleInternal);
     registerSetOscillator(setOscillatorInternal);
     registerStopOscillator(stopOscillatorInternal);
-  }, [setArmAngleInternal, setOscillatorInternal, stopOscillatorInternal]);
+    registerGetMovablePartsCount(getMovablePartsCountInternal);
+  }, [
+    setArmAngleInternal,
+    setOscillatorInternal,
+    stopOscillatorInternal,
+    getMovablePartsCountInternal,
+  ]);
 
   // Animation frame loop
   useFrame(() => {
@@ -239,7 +250,7 @@ function Scene({ parts, container }: SceneProps) {
         // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-          Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
         const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
@@ -249,7 +260,7 @@ function Scene({ parts, container }: SceneProps) {
           ref.rotation.set(
             initialRotation.x,
             initialRotation.y,
-            initialRotation.z + rad
+            initialRotation.z + rad,
           );
         }
         return;
@@ -363,7 +374,7 @@ function Scene({ parts, container }: SceneProps) {
 
       <group>
         {parts.map((part: ConfigPart, index: number) =>
-          renderPart(part, `part-${index}`)
+          renderPart(part, `part-${index}`),
         )}
       </group>
     </>
