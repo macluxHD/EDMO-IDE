@@ -55,7 +55,7 @@ function Simulation({ configId, onConfigChange }: SimulationProps) {
     const loadConfigurations = async () => {
       try {
         const manifestRes = await fetch(
-          "/EDMO-IDE/edmoConfigurations/manifest.json"
+          "/EDMO-IDE/edmoConfigurations/manifest.json",
         );
         const fileList: string[] = await manifestRes.json();
 
@@ -64,7 +64,7 @@ function Simulation({ configId, onConfigChange }: SimulationProps) {
             const res = await fetch(`/EDMO-IDE/edmoConfigurations/${file}`);
             const data = await res.json();
             return { ...data, file } as EdmoConfig;
-          })
+          }),
         );
 
         setConfigurations(configs);

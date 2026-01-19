@@ -299,6 +299,7 @@ function Scene({ parts, container }: SceneProps) {
           key={key}
           position={part.position}
           rotation={part.rotation}
+          color={part.color}
         >
           {childElement}
         </EDMO_Arm>
@@ -312,6 +313,7 @@ function Scene({ parts, container }: SceneProps) {
           key={key}
           position={part.position}
           rotation={part.rotation}
+          color={part.color}
         >
           {childElement}
         </EDMO_Body>
@@ -325,6 +327,7 @@ function Scene({ parts, container }: SceneProps) {
           key={key}
           position={part.position}
           rotation={part.rotation}
+          color={part.color}
         >
           {childElement}
         </EDMO_ArmV2>
@@ -338,6 +341,7 @@ function Scene({ parts, container }: SceneProps) {
           key={key}
           position={part.position}
           rotation={part.rotation}
+          color={part.color}
         >
           {childElement}
         </EDMO_BodyV2>

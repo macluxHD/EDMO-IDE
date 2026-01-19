@@ -14,6 +14,7 @@ export interface ConfigPart {
   isMovable: boolean;
   position: [number, number, number];
   rotation: [number, number, number];
+  color?: string;
   child?: ConfigPart;
 }
 
@@ -27,6 +28,7 @@ export interface EdmoConfig {
 export interface MeshProps {
   position?: [number, number, number];
   rotation?: [number, number, number];
+  color?: string;
   children?: React.ReactNode;
 }
 

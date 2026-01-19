@@ -6,7 +6,7 @@ import * as THREE from "three";
 import type { MeshProps } from "./types";
 
 export const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
-  ({ position, rotation, children, ...rest }, ref) => {
+  ({ position, rotation, color, children, ...rest }, ref) => {
     const armSrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Arm.obj");
     const arm = useMemo(() => {
       const cloned = armSrc.clone(true);
@@ -15,14 +15,14 @@ export const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
           child.castShadow = true;
           child.receiveShadow = true;
           child.material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
+            color: color ?? 0xff0000,
             metalness: 0.3,
             roughness: 1,
           });
         }
       });
       return cloned;
-    }, [armSrc]);
+    }, [armSrc, color]);
 
     return (
       <group ref={ref} position={position} rotation={rotation}>
@@ -36,7 +36,7 @@ export const EDMO_Arm = React.forwardRef<THREE.Group, MeshProps>(
 EDMO_Arm.displayName = "EDMO_Arm";
 
 export const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(
-  ({ position, rotation, children, ...rest }, ref) => {
+  ({ position, rotation, color, children, ...rest }, ref) => {
     const bodySrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO1-1_Body.obj");
     const body = useMemo(() => {
       const cloned = bodySrc.clone(true);
@@ -45,14 +45,14 @@ export const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(
           child.castShadow = true;
           child.receiveShadow = true;
           child.material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
+            color: color ?? 0xff0000,
             metalness: 0.3,
             roughness: 1,
           });
         }
       });
       return cloned;
-    }, [bodySrc]);
+    }, [bodySrc, color]);
 
     return (
       <group ref={ref} position={position} rotation={rotation}>
@@ -66,7 +66,7 @@ export const EDMO_Body = React.forwardRef<THREE.Group, MeshProps>(
 EDMO_Body.displayName = "EDMO_Body";
 
 export const EDMO_BodyV2 = React.forwardRef<THREE.Group, MeshProps>(
-  ({ position, rotation, children, ...rest }, ref) => {
+  ({ position, rotation, color, children, ...rest }, ref) => {
     const bodySrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO2_Body.obj");
     const body = useMemo(() => {
       const cloned = bodySrc.clone(true);
@@ -75,14 +75,14 @@ export const EDMO_BodyV2 = React.forwardRef<THREE.Group, MeshProps>(
           child.castShadow = true;
           child.receiveShadow = true;
           child.material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
+            color: color ?? 0xff0000,
             metalness: 0.3,
             roughness: 1,
           });
         }
       });
       return cloned;
-    }, [bodySrc]);
+    }, [bodySrc, color]);
 
     const motorHouseMtl = useLoader(
       MTLLoader,
@@ -120,7 +120,7 @@ export const EDMO_BodyV2 = React.forwardRef<THREE.Group, MeshProps>(
 EDMO_BodyV2.displayName = "EDMO_BodyV2";
 
 export const EDMO_ArmV2 = React.forwardRef<THREE.Group, MeshProps>(
-  ({ position, rotation, children, ...rest }, ref) => {
+  ({ position, rotation, color, children, ...rest }, ref) => {
     const armSrc = useLoader(OBJLoader, "/EDMO-IDE/mesh/EDMO2_Arm.obj");
     const arm = useMemo(() => {
       const cloned = armSrc.clone(true);
@@ -129,14 +129,14 @@ export const EDMO_ArmV2 = React.forwardRef<THREE.Group, MeshProps>(
           child.castShadow = true;
           child.receiveShadow = true;
           child.material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
+            color: color ?? 0xff0000,
             metalness: 0.3,
             roughness: 1,
           });
         }
       });
       return cloned;
-    }, [armSrc]);
+    }, [armSrc, color]);
 
     return (
       <group ref={ref} position={position} rotation={rotation}>
