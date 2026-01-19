@@ -15,6 +15,7 @@ export interface ConfigPart {
   position: [number, number, number];
   rotation: [number, number, number];
   color?: string;
+  flip?: boolean;
   child?: ConfigPart;
 }
 

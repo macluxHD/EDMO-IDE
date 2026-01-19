@@ -126,7 +126,9 @@ function Scene({ parts, container }: SceneProps) {
       }
 
       const clampedDegrees = THREE.MathUtils.clamp(degrees, -90, 90);
-      const rad = THREE.MathUtils.degToRad(clampedDegrees);
+      const part = flattenedParts[actualIndex];
+      const flipMultiplier = part?.flip ? -1 : 1;
+      const rad = THREE.MathUtils.degToRad(clampedDegrees) * flipMultiplier;
 
       const r = armRef.rotation;
       const state = anim.current[actualIndex];
@@ -250,11 +252,12 @@ function Scene({ parts, container }: SceneProps) {
         // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+          Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
         const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
-        const rad = THREE.MathUtils.degToRad(clampedAngle);
+        const flipMultiplier = part.flip ? -1 : 1;
+        const rad = THREE.MathUtils.degToRad(clampedAngle) * flipMultiplier;
 
         if (initialRotation) {
           ref.rotation.set(
