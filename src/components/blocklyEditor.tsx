@@ -17,6 +17,7 @@ interface BlocklyEditorProps {
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onReloadWorkspace: () => void;
+  onOpenModelSelection: () => void;
 }
 
 export default function BlocklyEditor({
@@ -30,6 +31,7 @@ export default function BlocklyEditor({
   onSaveFile,
   onLoadFile,
   onReloadWorkspace,
+  onOpenModelSelection,
 }: BlocklyEditorProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -101,6 +103,9 @@ export default function BlocklyEditor({
           <button onClick={onSaveFile}>{t("save.button")}</button>
           <button onClick={() => fileInputRef.current?.click()}>
             {t("load.button")}
+          </button>
+          <button onClick={onOpenModelSelection}>
+            {t("modelSelection.changeButton")}
           </button>
           <input
             type="file"

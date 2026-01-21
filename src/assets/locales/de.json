@@ -64,6 +64,16 @@
     "connect": "Verbinden",
     "error": "Fehler beim Verbinden"
   },
+  "modelSelection": {
+    "caption": "Roboter wählen",
+    "title": "EDMO-Modell auswählen",
+    "description": "Wähle den EDMO-Roboter, damit Simulator und Blöcke zur Hardware passen.",
+    "chooseButton": "Dieses Modell verwenden",
+    "changeButton": "Roboter wechseln",
+    "loading": "Robotkonfigurationen werden geladen...",
+    "error": "Konnte die Roboter nicht laden: {{message}}",
+    "noModels": "Derzeit sind keine Robotkonfigurationen verfügbar."
+  },
   "mobileWarning": {
     "title": "Bildschirm zu klein",
     "message": "Diese Anwendung benötigt einen größeren Bildschirm, um richtig zu funktionieren.",

@@ -12,6 +12,8 @@ import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useTranslation } from "react-i18next";
 import { useWorkspaceReload } from "./hooks/useWorkspaceReload";
 import { updateServoDropdowns } from "./custom_blocks/setRotation";
+import ModelSelectionOverlay from "./components/ModelSelectionOverlay";
+import { useEdmoConfigurations } from "./hooks/useEdmoConfigurations";
 
 function App() {
   const { t } = useTranslation();
@@ -28,6 +30,13 @@ function App() {
     handleSaveFile,
     handleLoadFile,
   } = useSaving();
+  const {
+    configurations,
+    isLoading: configurationsLoading,
+    error: configurationError,
+  } = useEdmoConfigurations();
+  const [isModelSelectionOpen, setModelSelectionOpen] =
+    useState(!robotConfigId);
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -39,6 +48,15 @@ function App() {
   // Vertical split inside right column (Simulation vs Code)
   const [simFrac, setSimFrac] = useState(0.6);
   const sideRef = useRef<HTMLDivElement>(null);
+
+  const openModelSelectionModal = () => {
+    setModelSelectionOpen(true);
+  };
+
+  const handleModelSelection = (configId: string) => {
+    setRobotConfigId(configId);
+    setModelSelectionOpen(false);
+  };
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
     setWorkspace(workspace);
@@ -140,6 +158,7 @@ function App() {
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
           onReloadWorkspace={reloadWorkspace}
+          onOpenModelSelection={openModelSelectionModal}
         />
 
         <div className="col-resizer" onMouseDown={startColDrag} />
@@ -158,7 +177,7 @@ function App() {
             <div className="panel-body simulation">
               <Simulation
                 configId={robotConfigId}
-                onConfigChange={setRobotConfigId}
+                configurations={configurations}
               />
             </div>
           </section>
@@ -173,6 +192,13 @@ function App() {
           </section>
         </div>
       </div>
+      <ModelSelectionOverlay
+        isOpen={isModelSelectionOpen}
+        configurations={configurations}
+        isLoading={configurationsLoading}
+        error={configurationError}
+        onModelSelect={handleModelSelection}
+      />
       <RobotConnection />
       <GlobalOverlays
         infiniteLoopState={infiniteLoopState}
