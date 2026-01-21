@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { BlocklyWorkspace } from "@kuband/react-blockly";
 import * as Blockly from "blockly";
 import Toolbox from "../toolbox";
@@ -75,6 +75,35 @@ export default function BlocklyEditor({
     return Blockly.Theme.defineTheme("edmoTheme", opts);
   }, []);
 
+  // Handle window resize to reposition trashcan
+  useEffect(() => {
+    const handleResize = () => {
+      const workspace = Blockly.getMainWorkspace();
+      if (workspace) {
+        Blockly.svgResize(workspace as Blockly.WorkspaceSvg);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, [version]);
+
+  const handleWorkspaceChange = (workspace: Blockly.Workspace) => {
+    onWorkspaceChange(workspace);
+
+    // Force reposition UI elements after zoom/scroll
+    if (workspace instanceof Blockly.WorkspaceSvg) {
+      setTimeout(() => {
+        workspace.resize();
+      }, 100);
+    }
+  };
+
   return (
     <div className="editor-wrapper">
       {/* Toolbar */}
@@ -128,11 +157,20 @@ export default function BlocklyEditor({
           workspaceConfiguration={{
             theme: edmoTheme,
             renderer: "geras",
-            grid: { spacing: 24, length: 3, colour: "#5f5f5fff", snap: true },
-            zoom: { controls: true, wheel: true },
+            grid: { spacing: 24, length: 3, colour: "#3a3a3a", snap: true },
+            zoom: {
+              controls: true,
+              wheel: true,
+              startScale: 1.0,
+              maxScale: 2.0,
+              minScale: 0.5,
+              scaleSpeed: 1.1,
+              pinch: true,
+            },
             move: { scrollbars: true, drag: true, wheel: true },
+            maxTrashcanContents: 32,
           }}
-          onWorkspaceChange={onWorkspaceChange}
+          onWorkspaceChange={handleWorkspaceChange}
           onXmlChange={onXmlChange}
         />
       </div>

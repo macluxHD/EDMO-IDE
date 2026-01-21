@@ -378,3 +378,9 @@ body,
     height: 100%;
   }
 }
+
+.blocklyTrash image {
+  filter: brightness(0) saturate(100%) invert(17%) sepia(96%) saturate(7484%)
+    hue-rotate(2deg);
+  transform: scale(1.4);
+}
