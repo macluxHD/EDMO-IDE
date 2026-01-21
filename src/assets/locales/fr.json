@@ -64,6 +64,16 @@
     "connect": "Connecter",
     "error": "Erreur lors de la connexion"
   },
+  "modelSelection": {
+    "caption": "Choisissez un robot",
+    "title": "Sélectionnez votre modèle EDMO",
+    "description": "Choisissez le robot EDMO que vous utilisez pour que le simulateur et les blocs correspondent à votre matériel.",
+    "chooseButton": "Utiliser ce modèle",
+    "changeButton": "Changer de robot",
+    "loading": "Chargement des configurations robot...",
+    "error": "Impossible de charger les robots : {{message}}",
+    "noModels": "Aucune configuration de robot n'est disponible pour le moment."
+  },
   "mobileWarning": {
     "title": "Écran trop petit",
     "message": "Cette application nécessite un écran plus grand pour fonctionner correctement.",

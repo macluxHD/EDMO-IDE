@@ -1,4 +1,6 @@
-export default {
+const AVAILABLE_MODEL_IDS = ["snake", "robot_arm", "biped", "starfish"] as const;
+
+const baseToolbox = {
   kind: "categoryToolbox",
   contents: [
     {
@@ -9,6 +11,7 @@ export default {
         {
           kind: "block",
           type: "set_rotation",
+          models: AVAILABLE_MODEL_IDS,
           inputs: {
             ANGLE: {
               shadow: {
@@ -23,6 +26,7 @@ export default {
         {
           kind: "block",
           type: "sleep",
+          models: AVAILABLE_MODEL_IDS,
           inputs: {
             SECONDS: {
               shadow: {
@@ -37,10 +41,12 @@ export default {
         {
           kind: "block",
           type: "start",
+          models: AVAILABLE_MODEL_IDS,
         },
         {
           kind: "block",
           type: "set_oscillator",
+          models: AVAILABLE_MODEL_IDS,
           inputs: {
             FREQUENCY: {
               shadow: {
@@ -858,3 +864,34 @@ export default {
     },
   ],
 };
+
+const edmoCategory = baseToolbox.contents[0];
+const otherCategories = baseToolbox.contents.slice(1);
+
+function getEdmoContentsForModel(modelId?: string) {
+  if (!edmoCategory) return [];
+  const blocks = edmoCategory.contents ?? [];
+  const matches =
+    !modelId
+      ? blocks
+      : blocks.filter((block) => {
+          const blockModels = (block as { models?: readonly string[] }).models;
+          return !blockModels || blockModels.includes(modelId);
+        });
+  return matches.map((block) => ({ ...block }));
+}
+
+function createToolboxConfiguration(modelId?: string) {
+  return {
+    ...baseToolbox,
+    contents: [
+      {
+        ...edmoCategory,
+        contents: getEdmoContentsForModel(modelId),
+      },
+      ...otherCategories,
+    ],
+  };
+}
+
+export default createToolboxConfiguration;

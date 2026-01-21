@@ -64,6 +64,16 @@
     "connect": "Verbind",
     "error": "Er is een fout opgetreden tijdens het verbinden"
   },
+  "modelSelection": {
+    "caption": "Kies een robot",
+    "title": "Selecteer je EDMO-model",
+    "description": "Kies de EDMO-robot zodat simulator en aangepaste blokken bij je hardware passen.",
+    "chooseButton": "Dit model gebruiken",
+    "changeButton": "Andere robot",
+    "loading": "Robotconfiguraties worden geladen...",
+    "error": "Kan robots niet laden: {{message}}",
+    "noModels": "Er zijn momenteel geen robotconfiguraties beschikbaar."
+  },
   "mobileWarning": {
     "title": "Scherm te klein",
     "message": "Deze applicatie vereist een groter scherm om goed te functioneren.",

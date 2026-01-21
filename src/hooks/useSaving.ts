@@ -8,14 +8,16 @@ interface SaveData {
   robotConfigId?: string;
 }
 
-export function useSaving() {
+export function useSaving(initialRobotConfigId?: string) {
   const { t } = useTranslation();
   const [xml, setXml] = useState<string>(
     localStorage.getItem("blocklyWorkspaceXml") || ""
   );
   const { reloadWorkspace } = useWorkspaceReload();
   const [robotConfigId, setRobotConfigId] = useState<string>(
-    localStorage.getItem("robotConfig") || ""
+    initialRobotConfigId !== undefined
+      ? initialRobotConfigId
+      : localStorage.getItem("robotConfig") || ""
   );
 
   useEffect(() => {
