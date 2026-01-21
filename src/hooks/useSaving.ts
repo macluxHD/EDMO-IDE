@@ -11,13 +11,13 @@ interface SaveData {
 export function useSaving(initialRobotConfigId?: string) {
   const { t } = useTranslation();
   const [xml, setXml] = useState<string>(
-    localStorage.getItem("blocklyWorkspaceXml") || ""
+    localStorage.getItem("blocklyWorkspaceXml") || "",
   );
   const { reloadWorkspace } = useWorkspaceReload();
   const [robotConfigId, setRobotConfigId] = useState<string>(
-    initialRobotConfigId !== undefined
+    initialRobotConfigId
       ? initialRobotConfigId
-      : localStorage.getItem("robotConfig") || ""
+      : localStorage.getItem("robotConfig") || "",
   );
 
   useEffect(() => {
@@ -97,7 +97,7 @@ export function useSaving(initialRobotConfigId?: string) {
       reader.readAsText(file);
       event.target.value = "";
     },
-    []
+    [],
   );
 
   return {

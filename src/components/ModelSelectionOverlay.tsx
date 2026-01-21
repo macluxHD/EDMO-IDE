@@ -1,13 +1,6 @@
 import type { EdmoConfig } from "./simulation/types";
 import { useTranslation } from "react-i18next";
 
-const THUMBNAIL_OVERRIDES: Record<string, string> = {
-  robot_arm: "arm.png",
-  biped: "biped.png",
-  snake: "snake.png",
-  starfish: "starfish.png",
-};
-
 interface ModelSelectionOverlayProps {
   isOpen: boolean;
   configurations: EdmoConfig[];
@@ -31,12 +24,8 @@ export default function ModelSelectionOverlay({
   return (
     <div className="model-selection-overlay">
       <div className="model-selection-panel">
-        <p className="model-selection-kicker">
-          {t("modelSelection.caption")}
-        </p>
-        <h1 className="model-selection-title">
-          {t("modelSelection.title")}
-        </h1>
+        <p className="model-selection-kicker">{t("modelSelection.caption")}</p>
+        <h1 className="model-selection-title">{t("modelSelection.title")}</h1>
         <p className="model-selection-description">
           {t("modelSelection.description")}
         </p>
@@ -64,9 +53,7 @@ export default function ModelSelectionOverlay({
               >
                 <img
                   className="model-selection-card-image"
-                  src={`${baseUrl}robot-thumbnails/${
-                    THUMBNAIL_OVERRIDES[config.id] ?? `${config.id}.png`
-                  }`}
+                  src={`${baseUrl}robot-thumbnails/${config.id}.png`}
                   alt={config.name}
                   loading="lazy"
                 />

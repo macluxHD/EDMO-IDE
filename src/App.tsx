@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { javascriptGenerator } from "blockly/javascript";
 import * as Blockly from "blockly";
 
@@ -15,67 +15,9 @@ import { updateServoDropdowns } from "./custom_blocks/setRotation";
 import ModelSelectionOverlay from "./components/ModelSelectionOverlay";
 import { useEdmoConfigurations } from "./hooks/useEdmoConfigurations";
 
-function getModelIdFromPath(configIds: string[]): string | undefined {
-  if (typeof window === "undefined" || configIds.length === 0) return undefined;
-  const segments = window.location.pathname.split("/").filter(Boolean);
-  for (let i = segments.length - 1; i >= 0; i--) {
-    if (configIds.includes(segments[i])) {
-      return segments[i];
-    }
-  }
-  return undefined;
-}
-
-function buildModelPath(modelId: string, configIds: string[]): string {
-  if (typeof window === "undefined") {
-    return `/${modelId}`;
-  }
-  const segments = window.location.pathname.split("/").filter(Boolean);
-  const filteredSegments = segments.filter(
-    (segment) => !configIds.includes(segment),
-  );
-  const prefix = filteredSegments.length ? `/${filteredSegments.join("/")}` : "";
-  return `${prefix}/${modelId}`;
-}
-
-function updateUrlWithModel(modelId: string, configIds: string[]) {
-  if (typeof window === "undefined") return;
-  const newPath = buildModelPath(modelId, configIds);
-  const search = window.location.search;
-  const hash = window.location.hash;
-  const nextUrl = `${newPath}${search}${hash}`;
-  const currentUrl = `${window.location.pathname}${search}${hash}`;
-  if (nextUrl !== currentUrl) {
-    window.history.replaceState(null, "", nextUrl);
-  }
-}
-
-function isEntryRoute(configIds: string[]) {
-  if (typeof window === "undefined") return false;
-  const segments = window.location.pathname.split("/").filter(Boolean);
-  const nonModelSegments = segments.filter(
-    (segment) => !configIds.includes(segment),
-  );
-  return (
-    segments.length === nonModelSegments.length &&
-    nonModelSegments.length === 1 &&
-    nonModelSegments[0] === "EDMO-IDE"
-  );
-}
-
-function getInitialRobotConfigId() {
-  if (typeof window === "undefined") return "";
-  const pathSegments = window.location.pathname.split("/").filter(Boolean);
-  const isEntryPath = pathSegments.length <= 1;
-  if (isEntryPath) {
-    return "";
-  }
-  return localStorage.getItem("robotConfig") || "";
-}
-
 function App() {
   const { t } = useTranslation();
-  const [javascriptCode, setJavascriptCode] = useState<string | string[]>(""); 
+  const [javascriptCode, setJavascriptCode] = useState<string | string[]>("");
   const [workspace, setWorkspace] = useState<Blockly.Workspace | null>(null);
   const { runCodes, infiniteLoopState, stopCode, handleCloseWarning } =
     useCodeRunner();
@@ -87,22 +29,14 @@ function App() {
     setRobotConfigId,
     handleSaveFile,
     handleLoadFile,
-  } = useSaving(getInitialRobotConfigId());
+  } = useSaving();
   const {
     configurations,
     isLoading: configurationsLoading,
     error: configurationError,
   } = useEdmoConfigurations();
-  const [isModelSelectionOpen, setModelSelectionOpen] = useState(
-    () => !Boolean(robotConfigId),
-  );
-  const [isManualModelSelectionOpen, setIsManualModelSelectionOpen] =
-    useState(false);
-  const [entryRoutePending, setEntryRoutePending] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const segments = window.location.pathname.split("/").filter(Boolean);
-    return segments.length <= 1;
-  });
+  const [isModelSelectionOpen, setModelSelectionOpen] =
+    useState(!robotConfigId);
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -115,80 +49,14 @@ function App() {
   const [simFrac, setSimFrac] = useState(0.6);
   const sideRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!robotConfigId || configurations.length === 0) return;
-    const configIds = configurations.map((config) => config.id);
-    updateUrlWithModel(robotConfigId, configIds);
-  }, [robotConfigId, configurations]);
-
-  useEffect(() => {
-    if (!configurations.length) return;
-    const configIds = configurations.map((config) => config.id);
-    const entryRoute = isEntryRoute(configIds);
-
-    if (entryRoute && entryRoutePending) {
-      if (robotConfigId) {
-        setRobotConfigId("");
-      }
-      return;
-    }
-
-    if (!entryRoute && entryRoutePending) {
-      setEntryRoutePending(false);
-    }
-
-    if (robotConfigId && !configIds.includes(robotConfigId)) {
-      setRobotConfigId("");
-      return;
-    }
-
-    const urlModelId = getModelIdFromPath(configIds);
-    if (urlModelId && urlModelId !== robotConfigId) {
-      setRobotConfigId(urlModelId);
-      return;
-    }
-
-    if (!robotConfigId && !entryRoute) {
-      setRobotConfigId(configurations[0].id);
-    }
-  }, [configurations, robotConfigId, setRobotConfigId, entryRoutePending]);
-
-  useEffect(() => {
-    if (!robotConfigId && configurations.length) {
-      setModelSelectionOpen(true);
-      setIsManualModelSelectionOpen(false);
-    }
-  }, [robotConfigId, configurations.length]);
-
-  useEffect(() => {
-    if (
-      !robotConfigId ||
-      !isModelSelectionOpen ||
-      isManualModelSelectionOpen
-    ) {
-      return;
-    }
-    setModelSelectionOpen(false);
-    setIsManualModelSelectionOpen(false);
-  }, [robotConfigId, isModelSelectionOpen, isManualModelSelectionOpen]);
-
   const openModelSelectionModal = () => {
-    setIsManualModelSelectionOpen(true);
     setModelSelectionOpen(true);
   };
 
   const handleModelSelection = (configId: string) => {
-    setEntryRoutePending(false);
     setRobotConfigId(configId);
     setModelSelectionOpen(false);
-    setIsManualModelSelectionOpen(false);
   };
-
-  useEffect(() => {
-    if (!robotConfigId || configurations.length === 0) return;
-    const configIds = configurations.map((config) => config.id);
-    updateUrlWithModel(robotConfigId, configIds);
-  }, [robotConfigId, configurations]);
 
   function workspaceDidChange(workspace: Blockly.Workspace) {
     setWorkspace(workspace);
@@ -270,29 +138,28 @@ function App() {
 
   return (
     <>
-        <div
-          className="container"
-          ref={containerRef}
-          style={{
-            gridTemplateColumns: `${editorFrac * 100}% 8px ${
-              (1 - editorFrac) * 100
-            }%`,
-          }}
-        >
-          <BlocklyEditor
-            xml={xml}
-            version={version}
-            workspace={workspace}
-            onWorkspaceChange={workspaceDidChange}
-            onXmlChange={setXml}
-            onRunCode={handleRunCode}
-            onStopCode={() => workspace && stopCode(workspace, true)}
-            onSaveFile={handleSaveFile}
-            onLoadFile={handleLoadFile}
-            onReloadWorkspace={reloadWorkspace}
-            modelId={robotConfigId}
-            onOpenModelSelection={openModelSelectionModal}
-          />
+      <div
+        className="container"
+        ref={containerRef}
+        style={{
+          gridTemplateColumns: `${editorFrac * 100}% 8px ${
+            (1 - editorFrac) * 100
+          }%`,
+        }}
+      >
+        <BlocklyEditor
+          xml={xml}
+          version={version}
+          workspace={workspace}
+          onWorkspaceChange={workspaceDidChange}
+          onXmlChange={setXml}
+          onRunCode={handleRunCode}
+          onStopCode={() => workspace && stopCode(workspace, true)}
+          onSaveFile={handleSaveFile}
+          onLoadFile={handleLoadFile}
+          onReloadWorkspace={reloadWorkspace}
+          onOpenModelSelection={openModelSelectionModal}
+        />
 
         <div className="col-resizer" onMouseDown={startColDrag} />
 

@@ -1,7 +1,7 @@
 import { useRef, useMemo } from "react";
 import { BlocklyWorkspace } from "@kuband/react-blockly";
 import * as Blockly from "blockly";
-import createToolboxConfiguration from "../toolbox";
+import Toolbox from "../toolbox";
 import logoUrl from "../assets/edmo-logo.png";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "./LanguageSelector";
@@ -17,7 +17,6 @@ interface BlocklyEditorProps {
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onReloadWorkspace: () => void;
-  modelId?: string;
   onOpenModelSelection: () => void;
 }
 
@@ -32,15 +31,10 @@ export default function BlocklyEditor({
   onSaveFile,
   onLoadFile,
   onReloadWorkspace,
-  modelId,
   onOpenModelSelection,
 }: BlocklyEditorProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const toolboxConfiguration = useMemo(
-    () => createToolboxConfiguration(modelId),
-    [modelId],
-  );
 
   // Custom theme
   const edmoTheme = useMemo(() => {
@@ -128,7 +122,7 @@ export default function BlocklyEditor({
       <div className="editor-canvas">
         <BlocklyWorkspace
           key={version}
-          toolboxConfiguration={toolboxConfiguration}
+          toolboxConfiguration={Toolbox}
           initialXml={xml}
           className="workspace"
           workspaceConfiguration={{
