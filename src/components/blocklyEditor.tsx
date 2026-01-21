@@ -9,6 +9,7 @@ import LanguageSelector from "./LanguageSelector";
 interface BlocklyEditorProps {
   xml: string;
   version: number;
+  workspace: Blockly.Workspace | null;
   onWorkspaceChange: (workspace: Blockly.Workspace) => void;
   onXmlChange: (xml: string) => void;
   onRunCode: () => void;
@@ -16,11 +17,13 @@ interface BlocklyEditorProps {
   onSaveFile: () => void;
   onLoadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onReloadWorkspace: () => void;
+  onOpenModelSelection: () => void;
 }
 
 export default function BlocklyEditor({
   xml,
   version,
+  workspace,
   onWorkspaceChange,
   onXmlChange,
   onRunCode,
@@ -28,6 +31,7 @@ export default function BlocklyEditor({
   onSaveFile,
   onLoadFile,
   onReloadWorkspace,
+  onOpenModelSelection,
 }: BlocklyEditorProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -105,12 +109,32 @@ export default function BlocklyEditor({
       {/* Toolbar */}
       <div className="editor-toolbar">
         <img src={logoUrl} alt="EDMO Logo" className="editor-logo" />
+        <div className="toolbar-icons-left">
+          <button
+            onClick={() => workspace?.undo(false)}
+            disabled={!workspace}
+            title="Undo (Ctrl+Z)"
+          >
+            {t("undo")}
+          </button>
+          <button
+            onClick={() => workspace?.undo(true)}
+            disabled={!workspace}
+            title="Redo (Ctrl+Y)"
+          >
+            {t("redo")}
+          </button>
+        </div>
         <div className="toolbar-buttons">
           <button onClick={onRunCode}>{t("run")}</button>
           <button onClick={onStopCode}>{t("stop")}</button>
+          <div className="toolbar-divider" />
           <button onClick={onSaveFile}>{t("save.button")}</button>
           <button onClick={() => fileInputRef.current?.click()}>
             {t("load.button")}
+          </button>
+          <button onClick={onOpenModelSelection}>
+            {t("modelSelection.changeButton")}
           </button>
           <input
             type="file"

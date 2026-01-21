@@ -1,6 +1,8 @@
 {
   "run": "Start",
   "stop": "Stop",
+  "undo": "Ongedaan maken",
+  "redo": "Opnieuw",
   "save": {
     "button": "Opslaan",
     "success": "Succesvol opgeslagen",
@@ -34,6 +36,14 @@
     "block2": "in op",
     "block3": "graden"
   },
+  "setOscillator": {
+    "tooltip": "Stelt de oscillatorparameters van de opgegeven servo in.",
+    "block1": "stel oscillator van servo in",
+    "frequency": "frequentie",
+    "amplitude": "amplitude",
+    "offset": "offset",
+    "phaseShift": "faseverschuiving"
+  },
   "sleep": {
     "tooltip": "Pauzeert de uitvoering van de code voor het aantal opgegeven seconden.",
     "block1": "Pauzeer de code voor",
@@ -53,5 +63,20 @@
     "connecting": "Aan het verbinden...",
     "connect": "Verbind",
     "error": "Er is een fout opgetreden tijdens het verbinden"
+  },
+  "modelSelection": {
+    "caption": "Kies een robot",
+    "title": "Selecteer je EDMO-model",
+    "description": "Kies de EDMO-robot zodat simulator en aangepaste blokken bij je hardware passen.",
+    "chooseButton": "Dit model gebruiken",
+    "changeButton": "Andere robot",
+    "loading": "Robotconfiguraties worden geladen...",
+    "error": "Kan robots niet laden: {{message}}",
+    "noModels": "Er zijn momenteel geen robotconfiguraties beschikbaar."
+  },
+  "mobileWarning": {
+    "title": "Scherm te klein",
+    "message": "Deze applicatie vereist een groter scherm om goed te functioneren.",
+    "hint": "Gebruik een apparaat met een groter scherm, zoals een desktop computer, laptop of tablet."
   }
 }

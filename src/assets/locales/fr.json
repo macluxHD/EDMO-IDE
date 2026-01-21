@@ -1,6 +1,8 @@
 {
   "run": "Exécuter",
   "stop": "Stop",
+  "undo": "Annuler",
+  "redo": "Rétablir",
   "save": {
     "button": "Sauvgarder",
     "success": "Sauvgardé avec succès",
@@ -34,6 +36,14 @@
     "block2": "à",
     "block3": "degrés"
   },
+  "setOscillator": {
+    "tooltip": "Définit les paramètres de l'oscillateur du servo spécifié.",
+    "block1": "définir l'oscillateur du servo",
+    "frequency": "fréquence",
+    "amplitude": "amplitude",
+    "offset": "offset",
+    "phaseShift": "déphasage"
+  },
   "sleep": {
     "tooltip": "Met le programme en pause pendant le nombre de secondes spécifié.",
     "block1": "Pause pendant",
@@ -53,5 +63,20 @@
     "connecting": "Connexion...",
     "connect": "Connecter",
     "error": "Erreur lors de la connexion"
+  },
+  "modelSelection": {
+    "caption": "Choisissez un robot",
+    "title": "Sélectionnez votre modèle EDMO",
+    "description": "Choisissez le robot EDMO que vous utilisez pour que le simulateur et les blocs correspondent à votre matériel.",
+    "chooseButton": "Utiliser ce modèle",
+    "changeButton": "Changer de robot",
+    "loading": "Chargement des configurations robot...",
+    "error": "Impossible de charger les robots : {{message}}",
+    "noModels": "Aucune configuration de robot n'est disponible pour le moment."
+  },
+  "mobileWarning": {
+    "title": "Écran trop petit",
+    "message": "Cette application nécessite un écran plus grand pour fonctionner correctement.",
+    "hint": "Veuillez utiliser un appareil avec un écran plus grand, comme un ordinateur, un ordinateur portable ou une tablette."
   }
 }

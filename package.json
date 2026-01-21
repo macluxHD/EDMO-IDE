@@ -22,6 +22,7 @@
     "react-syntax-highlighter": "git+https://github.com/UncleJart/react-syntax-highlighter.git#aea2ad57526443240bbd321aabb298f7a1d01b68",
     "react-toastify": "^11.0.5",
     "three": "^0.180.0",
+    "three-viewport-gizmo": "^2.2.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

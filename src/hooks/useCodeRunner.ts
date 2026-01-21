@@ -13,6 +13,9 @@ import {
 import { useTranslation } from "react-i18next";
 import "../custom_blocks/start";
 import { t } from "i18next";
+import { initInterpreterSetOscillator } from "../custom_blocks/setOscillator";
+import { robotWebSocket } from "../services/websocketService";
+import { resetAllLimbs } from "../components/simulationControls";
 
 const interpreters = new Map<string, Interpreter | null>();
 const highlightedBlocks = new Map<string, string | null>();
@@ -20,7 +23,7 @@ const highlightedBlocks = new Map<string, string | null>();
 function setHighlighted(
   blockId: string | null | undefined,
   workspace: Blockly.Workspace,
-  highlighted: boolean
+  highlighted: boolean,
 ) {
   if (blockId) {
     const block = workspace.getBlockById(blockId);
@@ -34,7 +37,7 @@ function initApi(
   interpreter: Interpreter,
   globalObject: unknown,
   workspace: Blockly.Workspace,
-  interpreterId: string
+  interpreterId: string,
 ) {
   // Add an API function for the alert() block.
   interpreter.setProperty(
@@ -42,7 +45,7 @@ function initApi(
     "alert",
     interpreter.createNativeFunction(function (text: string) {
       return alert(arguments.length ? text : "");
-    })
+    }),
   );
 
   // Add an API function for the prompt() block.
@@ -51,7 +54,7 @@ function initApi(
     "prompt",
     interpreter.createNativeFunction(function (text: string) {
       return prompt(text);
-    })
+    }),
   );
 
   // Add an API function for highlighting blocks.
@@ -68,25 +71,26 @@ function initApi(
       // Highlight the new block
       setHighlighted(blockId, workspace, true);
       highlightedBlocks.set(interpreterId, blockId);
-    })
+    }),
   );
 
   initInterpreterSleep(interpreter, globalObject);
   initInterpreterSetRotation(interpreter, globalObject);
   initInterpreterInfiniteLoopTrap(interpreter, globalObject);
+  initInterpreterSetOscillator(interpreter, globalObject);
 }
 
 function runCode(
   code: string,
   handleInfiniteLoopDetection: (reason: "iterations" | "timeout") => void,
-  workspace: Blockly.Workspace
+  workspace: Blockly.Workspace,
 ) {
   const interpreterId = uuidv4();
   interpreters.set(
     interpreterId,
     new Interpreter(code, (interpreter, globalObject) =>
-      initApi(interpreter, globalObject, workspace, interpreterId)
-    )
+      initApi(interpreter, globalObject, workspace, interpreterId),
+    ),
   );
 
   const runner = () => {
@@ -150,6 +154,8 @@ export function useCodeRunner() {
 
     if (startBlocks.length === 0) return;
 
+    robotWebSocket.resetPhase();
+
     javascriptGenerator.INFINITE_LOOP_TRAP = `if (--LoopTrap == 0) throw "${INFINITE_LOOP_ERROR}";\n`;
 
     javascriptGenerator.STATEMENT_PREFIX = "highlightBlock(%1);\n";
@@ -175,7 +181,14 @@ export function useCodeRunner() {
     }
   };
 
-  const stopCode = (workspace: Blockly.Workspace) => {
+  const stopCode = (
+    workspace: Blockly.Workspace,
+    shouldResetLimbs: boolean = false,
+  ) => {
+    // Reset all limbs to angle 0 unless we're stopping to restart
+    if (shouldResetLimbs) {
+      resetAllLimbs();
+    }
     if (interpreters.size === 0) return;
     toast.info(t("codeRunner.halting"));
 

@@ -1,0 +1,66 @@
+{
+  "id": "starfish",
+  "name": "Starfish",
+  "parts": [
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "flip": true,
+      "position": [5.285, 0, 0],
+      "rotation": [0, 0, 0],
+      "color": "#ff0000"
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [5.285, 0, 0],
+      "rotation": [0, 0, 0],
+      "color": "#ff0000"
+    },
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "flip": true,
+      "position": [0, 0, -5.285],
+      "rotation": [0, 1.570796327, 0],
+      "color": "#00ff00"
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [0, 0, -5.285],
+      "rotation": [0, 1.570796327, 0],
+      "color": "#00ff00"
+    },
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "flip": true,
+      "position": [-5.285, 0, 0],
+      "rotation": [0, 3.141592654, 0],
+      "color": "#0000ff"
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [-5.285, 0, 0],
+      "rotation": [0, 3.141592654, 0],
+      "color": "#0000ff"
+    },
+    {
+      "type": "armv2",
+      "isMovable": true,
+      "flip": true,
+      "position": [0, 0, 5.285],
+      "rotation": [0, -1.570796327, 0],
+      "color": "#ffff00"
+    },
+    {
+      "type": "bodyv2",
+      "isMovable": false,
+      "position": [0, 0, 5.285],
+      "rotation": [0, -1.570796327, 0],
+      "color": "#ffff00"
+    }
+  ]
+}

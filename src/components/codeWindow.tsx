@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function CodeWindow({ code }: { code: string | string[] }) {
   const { t } = useTranslation();
@@ -17,12 +17,12 @@ export default function CodeWindow({ code }: { code: string | string[] }) {
             {code.length > 1 && (
               <div
                 style={{
-                  backgroundColor: "#282c34",
-                  color: "#61dafb",
+                  backgroundColor: "#f0f0f0",
+                  color: "#383a42",
                   padding: "8px 12px",
                   fontFamily: "monospace",
                   fontSize: "14px",
-                  borderBottom: "1px solid #3e4451",
+                  borderBottom: "1px solid #e0e0e0",
                 }}
               >
                 {t("codeWindow.threadLabel", { index: index + 1 })}
@@ -30,7 +30,7 @@ export default function CodeWindow({ code }: { code: string | string[] }) {
             )}
             <SyntaxHighlighter
               language="javascript"
-              style={oneDark}
+              style={oneLight}
               customStyle={{
                 borderRadius: 0,
                 padding: code.length > 1 ? "12px" : 0,
@@ -52,7 +52,7 @@ export default function CodeWindow({ code }: { code: string | string[] }) {
     <div className="output">
       <SyntaxHighlighter
         language="javascript"
-        style={oneDark}
+        style={oneLight}
         customStyle={{
           borderRadius: 0,
           padding: 0,

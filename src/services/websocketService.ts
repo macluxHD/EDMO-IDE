@@ -8,6 +8,14 @@ export interface SetArmAngleData {
   degrees: number;
 }
 
+export interface SetOscillatorData {
+  index: number;
+  frequency: number;
+  amplitude: number;
+  offset: number;
+  phaseShift: number;
+}
+
 class WebSocketService {
   private socket: WebSocket | null = null;
   private url: string;
@@ -104,6 +112,26 @@ class WebSocketService {
 
   setArmAngle(index: number, degrees: number): boolean {
     return this.sendMessage<SetArmAngleData>("setArmAngle", { index, degrees });
+  }
+
+  setOscillator(
+    index: number,
+    frequency: number,
+    amplitude: number,
+    offset: number,
+    phaseShift: number
+  ): boolean {
+    return this.sendMessage<SetOscillatorData>("setOscillator", {
+      index,
+      frequency,
+      amplitude,
+      offset,
+      phaseShift,
+    });
+  }
+
+  resetPhase(): boolean {
+    return this.sendMessage("reset_phase", {});
   }
 
   disconnect() {

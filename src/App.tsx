@@ -4,13 +4,16 @@ import * as Blockly from "blockly";
 
 import BlocklyEditor from "./components/blocklyEditor";
 import CodeWindow from "./components/codeWindow";
-import Simulation from "./components/simulation";
+import Simulation from "./components/simulation/Simulation";
 import { RobotConnection } from "./components/RobotConnection";
 import { useCodeRunner } from "./hooks/useCodeRunner";
 import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useTranslation } from "react-i18next";
 import { useWorkspaceReload } from "./hooks/useWorkspaceReload";
+import { updateServoDropdowns } from "./custom_blocks/setRotation";
+import ModelSelectionOverlay from "./components/ModelSelectionOverlay";
+import { useEdmoConfigurations } from "./hooks/useEdmoConfigurations";
 
 function App() {
   const { t } = useTranslation();
@@ -27,6 +30,13 @@ function App() {
     handleSaveFile,
     handleLoadFile,
   } = useSaving();
+  const {
+    configurations,
+    isLoading: configurationsLoading,
+    error: configurationError,
+  } = useEdmoConfigurations();
+  const [isModelSelectionOpen, setModelSelectionOpen] =
+    useState(!robotConfigId);
 
   // Horizontal split (Blockly vs right column)
   const [editorFrac, setEditorFrac] = useState<number>(() => {
@@ -39,6 +49,15 @@ function App() {
   const [simFrac, setSimFrac] = useState(0.6);
   const sideRef = useRef<HTMLDivElement>(null);
 
+  const openModelSelectionModal = () => {
+    setModelSelectionOpen(true);
+  };
+
+  const handleModelSelection = (configId: string) => {
+    setRobotConfigId(configId);
+    setModelSelectionOpen(false);
+  };
+
   function workspaceDidChange(workspace: Blockly.Workspace) {
     setWorkspace(workspace);
 
@@ -46,6 +65,8 @@ function App() {
     const startBlocks = allBlocks.filter((block) => block.type === "start");
 
     if (!javascriptGenerator.isInitialized) javascriptGenerator.init(workspace);
+
+    setTimeout(() => updateServoDropdowns(), 100);
 
     let newCode: string | string[];
     if (startBlocks.length > 1) {
@@ -72,7 +93,7 @@ function App() {
   }
   const handleRunCode = () => {
     if (workspace) {
-      stopCode(workspace);
+      stopCode(workspace, false); // Don't reset limbs when stopping to restart
       runCodes(workspace);
     }
   };
@@ -129,13 +150,15 @@ function App() {
         <BlocklyEditor
           xml={xml}
           version={version}
+          workspace={workspace}
           onWorkspaceChange={workspaceDidChange}
           onXmlChange={setXml}
           onRunCode={handleRunCode}
-          onStopCode={() => workspace && stopCode(workspace)}
+          onStopCode={() => workspace && stopCode(workspace, true)}
           onSaveFile={handleSaveFile}
           onLoadFile={handleLoadFile}
           onReloadWorkspace={reloadWorkspace}
+          onOpenModelSelection={openModelSelectionModal}
         />
 
         <div className="col-resizer" onMouseDown={startColDrag} />
@@ -144,7 +167,9 @@ function App() {
           className="side-panels"
           ref={sideRef}
           style={{
-            gridTemplateRows: `${simFrac * 100}% 6px ${(1 - simFrac) * 100}%`,
+            gridTemplateRows: `minmax(0, ${simFrac}fr) 6px minmax(0, ${
+              1 - simFrac
+            }fr)`,
           }}
         >
           <section className="panel">
@@ -152,7 +177,7 @@ function App() {
             <div className="panel-body simulation">
               <Simulation
                 configId={robotConfigId}
-                onConfigChange={setRobotConfigId}
+                configurations={configurations}
               />
             </div>
           </section>
@@ -167,6 +192,13 @@ function App() {
           </section>
         </div>
       </div>
+      <ModelSelectionOverlay
+        isOpen={isModelSelectionOpen}
+        configurations={configurations}
+        isLoading={configurationsLoading}
+        error={configurationError}
+        onModelSelect={handleModelSelection}
+      />
       <RobotConnection />
       <GlobalOverlays
         infiniteLoopState={infiniteLoopState}
