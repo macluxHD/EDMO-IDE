@@ -63,5 +63,10 @@
     "connecting": "Verbindet...",
     "connect": "Verbinden",
     "error": "Fehler beim Verbinden"
+  },
+  "mobileWarning": {
+    "title": "Bildschirm zu klein",
+    "message": "Diese Anwendung benötigt einen größeren Bildschirm, um richtig zu funktionieren.",
+    "hint": "Bitte verwenden Sie ein Gerät mit einem größerem Bildschirm, wie einen Desktop-Computer, Laptop oder ein Tablet."
   }
 }

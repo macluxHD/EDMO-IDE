@@ -1,6 +1,7 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InfiniteLoopWarning from "../misc/InfiniteLoopWarning";
+import MobileWarning from "../misc/MobileWarning";
 
 interface GlobalOverlaysProps {
   infiniteLoopState: {
@@ -17,6 +18,7 @@ export default function GlobalOverlays({
 }: GlobalOverlaysProps) {
   return (
     <>
+      <MobileWarning />
       <InfiniteLoopWarning
         isOpen={infiniteLoopState.isWarningOpen}
         reason={infiniteLoopState.reason}
@@ -38,4 +40,3 @@ export default function GlobalOverlays({
     </>
   );
 }
-

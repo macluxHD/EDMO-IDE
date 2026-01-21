@@ -63,5 +63,10 @@
     "connecting": "Connecting...",
     "connect": "Connect",
     "error": "Error occured while connecting"
+  },
+  "mobileWarning": {
+    "title": "Screen Too Small",
+    "message": "This application requires a larger screen to function properly.",
+    "hint": "Please use a device with a larger screen, such as a desktop computer, laptop, or tablet in landscape mode."
   }
 }

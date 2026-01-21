@@ -63,5 +63,10 @@
     "connecting": "Aan het verbinden...",
     "connect": "Verbind",
     "error": "Er is een fout opgetreden tijdens het verbinden"
+  },
+  "mobileWarning": {
+    "title": "Scherm te klein",
+    "message": "Deze applicatie vereist een groter scherm om goed te functioneren.",
+    "hint": "Gebruik een apparaat met een groter scherm, zoals een desktop computer, laptop of tablet."
   }
 }

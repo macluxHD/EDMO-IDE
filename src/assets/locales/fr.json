@@ -63,5 +63,10 @@
     "connecting": "Connexion...",
     "connect": "Connecter",
     "error": "Erreur lors de la connexion"
+  },
+  "mobileWarning": {
+    "title": "Écran trop petit",
+    "message": "Cette application nécessite un écran plus grand pour fonctionner correctement.",
+    "hint": "Veuillez utiliser un appareil avec un écran plus grand, comme un ordinateur, un ordinateur portable ou une tablette."
   }
 }
