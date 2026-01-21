@@ -11,6 +11,7 @@ import { useSaving } from "./hooks/useSaving";
 import GlobalOverlays from "./components/overlays/GlobalOverlays";
 import { useTranslation } from "react-i18next";
 import { useWorkspaceReload } from "./hooks/useWorkspaceReload";
+import { updateServoDropdowns } from "./custom_blocks/setRotation";
 
 function App() {
   const { t } = useTranslation();
@@ -46,6 +47,8 @@ function App() {
     const startBlocks = allBlocks.filter((block) => block.type === "start");
 
     if (!javascriptGenerator.isInitialized) javascriptGenerator.init(workspace);
+
+    setTimeout(() => updateServoDropdowns(), 100);
 
     let newCode: string | string[];
     if (startBlocks.length > 1) {

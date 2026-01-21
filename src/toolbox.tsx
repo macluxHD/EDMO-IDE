@@ -10,14 +10,6 @@ export default {
           kind: "block",
           type: "set_rotation",
           inputs: {
-            SERVO_ID: {
-              shadow: {
-                type: "math_number",
-                fields: {
-                  NUM: 0,
-                },
-              },
-            },
             ANGLE: {
               shadow: {
                 type: "math_number",
@@ -50,14 +42,6 @@ export default {
           kind: "block",
           type: "set_oscillator",
           inputs: {
-            SERVO_ID: {
-              shadow: {
-                type: "math_number",
-                fields: {
-                  NUM: 0,
-                },
-              },
-            },
             FREQUENCY: {
               shadow: {
                 type: "math_number",

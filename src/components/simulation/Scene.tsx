@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useRef, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import {
   registerSetArmAngle,
@@ -11,6 +12,8 @@ import type { ConfigPart, OscillatorState, AnimationState } from "./types";
 import { lerpAngle, easeInOutCubic } from "./animations";
 import { EDMO_Arm, EDMO_Body, EDMO_ArmV2, EDMO_BodyV2 } from "./EdmoMeshes";
 import GizmoControls from "./GizmoControls";
+import { getServoLetter, getServoColor } from "../../utils/servoUtils";
+import { updateServoCount } from "../../custom_blocks/setRotation";
 
 interface SceneProps {
   parts: ConfigPart[];
@@ -220,6 +223,17 @@ function Scene({ parts, container }: SceneProps) {
     return flattenedParts.filter((part) => part.isMovable).length;
   }, [flattenedParts]);
 
+  const movablePartsIndices = useMemo(() => {
+    return flattenedParts
+      .map((part, i) => (part.isMovable ? i : -1))
+      .filter((i) => i !== -1);
+  }, [flattenedParts]);
+
+  useEffect(() => {
+    const count = movablePartsIndices.length;
+    updateServoCount(count);
+  }, [movablePartsIndices.length]);
+
   // Register control callbacks
   React.useEffect(() => {
     registerSetArmAngle(setArmAngleInternal);
@@ -252,7 +266,7 @@ function Scene({ parts, container }: SceneProps) {
         // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-          Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
         const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
@@ -286,68 +300,129 @@ function Scene({ parts, container }: SceneProps) {
 
   let partIndex = 0;
 
-  // Recursive function to render a part and its children
+  const renderServoLabel = useCallback(
+    (
+      partIndex: number,
+      servoIndex: number,
+      position: [number, number, number],
+      configColor?: string,
+    ) => {
+      const letter = getServoLetter(servoIndex);
+      const color = getServoColor(servoIndex, configColor);
+      return (
+        <Text
+          key={`servo-label-${partIndex}`}
+          position={[position[0], position[1] + 1.5, position[2]]}
+          fontSize={0.6}
+          color={color}
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.1}
+          outlineColor="#000000"
+        >
+          {letter}
+        </Text>
+      );
+    },
+    [],
+  );
+
   const renderPart = (part: ConfigPart, key: string): React.ReactNode => {
     const currentIndex = partIndex++;
     const childElement = part.child
       ? renderPart(part.child, `${key}-child`)
       : null;
 
+    const servoIndex = movablePartsIndices.indexOf(currentIndex);
+    const showLabel = part.isMovable && servoIndex !== -1;
+
     if (part.type === "arm") {
       return (
-        <EDMO_Arm
-          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
-            setPartRef(el, currentIndex)
-          }
-          key={key}
-          position={part.position}
-          rotation={part.rotation}
-          color={part.color}
-        >
-          {childElement}
-        </EDMO_Arm>
+        <group key={key}>
+          <EDMO_Arm
+            ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+              setPartRef(el, currentIndex)
+            }
+            position={part.position}
+            rotation={part.rotation}
+            color={part.color}
+          >
+            {childElement}
+          </EDMO_Arm>
+          {showLabel &&
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
+        </group>
       );
     } else if (part.type === "body") {
       return (
-        <EDMO_Body
-          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
-            setPartRef(el, currentIndex)
-          }
-          key={key}
-          position={part.position}
-          rotation={part.rotation}
-          color={part.color}
-        >
-          {childElement}
-        </EDMO_Body>
+        <group key={key}>
+          <EDMO_Body
+            ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+              setPartRef(el, currentIndex)
+            }
+            position={part.position}
+            rotation={part.rotation}
+            color={part.color}
+          >
+            {childElement}
+          </EDMO_Body>
+          {showLabel &&
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
+        </group>
       );
     } else if (part.type === "armv2") {
       return (
-        <EDMO_ArmV2
-          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
-            setPartRef(el, currentIndex)
-          }
-          key={key}
-          position={part.position}
-          rotation={part.rotation}
-          color={part.color}
-        >
-          {childElement}
-        </EDMO_ArmV2>
+        <group key={key}>
+          <EDMO_ArmV2
+            ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+              setPartRef(el, currentIndex)
+            }
+            position={part.position}
+            rotation={part.rotation}
+            color={part.color}
+          >
+            {childElement}
+          </EDMO_ArmV2>
+          {showLabel &&
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
+        </group>
       );
     } else if (part.type === "bodyv2") {
       return (
-        <EDMO_BodyV2
-          ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
-            setPartRef(el, currentIndex)
-          }
-          key={key}
-          position={part.position}
-          rotation={part.rotation}
-          color={part.color}
-        >
-          {childElement}
-        </EDMO_BodyV2>
+        <group key={key}>
+          <EDMO_BodyV2
+            ref={(el: THREE.Group<THREE.Object3DEventMap>) =>
+              setPartRef(el, currentIndex)
+            }
+            position={part.position}
+            rotation={part.rotation}
+            color={part.color}
+          >
+            {childElement}
+          </EDMO_BodyV2>
+          {showLabel &&
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
+        </group>
       );
     }
     return null;
