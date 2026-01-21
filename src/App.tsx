@@ -64,13 +64,13 @@ function App() {
     const allBlocks = workspace.getAllBlocks(false);
     const startBlocks = allBlocks.filter((block) => block.type === "start");
 
-    if (!javascriptGenerator.isInitialized) javascriptGenerator.init(workspace);
-
     setTimeout(() => updateServoDropdowns(), 100);
 
     let newCode: string | string[];
     if (startBlocks.length > 1) {
       // Generate code for each start block separately
+      // Reset the generator before generating code to ensure consistent variable names
+      javascriptGenerator.init(workspace);
       const codes = startBlocks
         .map((block) => {
           const code = javascriptGenerator.blockToCode(block);
