@@ -266,7 +266,7 @@ function Scene({ parts, container }: SceneProps) {
         // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-          Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
         const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
@@ -300,28 +300,32 @@ function Scene({ parts, container }: SceneProps) {
 
   let partIndex = 0;
 
-  const renderServoLabel = useCallback((
-    partIndex: number,
-    servoIndex: number,
-    position: [number, number, number],
-  ) => {
-    const letter = getServoLetter(servoIndex);
-    const color = getServoColor(servoIndex);
-    return (
-      <Text
-        key={`servo-label-${partIndex}`}
-        position={[position[0], position[1] + 1.5, position[2]]}
-        fontSize={0.6}
-        color={color}
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.1}
-        outlineColor="#000000"
-      >
-        {letter}
-      </Text>
-    );
-  }, []);
+  const renderServoLabel = useCallback(
+    (
+      partIndex: number,
+      servoIndex: number,
+      position: [number, number, number],
+      configColor?: string,
+    ) => {
+      const letter = getServoLetter(servoIndex);
+      const color = getServoColor(servoIndex, configColor);
+      return (
+        <Text
+          key={`servo-label-${partIndex}`}
+          position={[position[0], position[1] + 1.5, position[2]]}
+          fontSize={0.6}
+          color={color}
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.1}
+          outlineColor="#000000"
+        >
+          {letter}
+        </Text>
+      );
+    },
+    [],
+  );
 
   const renderPart = (part: ConfigPart, key: string): React.ReactNode => {
     const currentIndex = partIndex++;
@@ -346,7 +350,12 @@ function Scene({ parts, container }: SceneProps) {
             {childElement}
           </EDMO_Arm>
           {showLabel &&
-            renderServoLabel(currentIndex, servoIndex, part.position)}
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
         </group>
       );
     } else if (part.type === "body") {
@@ -363,7 +372,12 @@ function Scene({ parts, container }: SceneProps) {
             {childElement}
           </EDMO_Body>
           {showLabel &&
-            renderServoLabel(currentIndex, servoIndex, part.position)}
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
         </group>
       );
     } else if (part.type === "armv2") {
@@ -380,7 +394,12 @@ function Scene({ parts, container }: SceneProps) {
             {childElement}
           </EDMO_ArmV2>
           {showLabel &&
-            renderServoLabel(currentIndex, servoIndex, part.position)}
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
         </group>
       );
     } else if (part.type === "bodyv2") {
@@ -397,7 +416,12 @@ function Scene({ parts, container }: SceneProps) {
             {childElement}
           </EDMO_BodyV2>
           {showLabel &&
-            renderServoLabel(currentIndex, servoIndex, part.position)}
+            renderServoLabel(
+              currentIndex,
+              servoIndex,
+              part.position,
+              part.color,
+            )}
         </group>
       );
     }

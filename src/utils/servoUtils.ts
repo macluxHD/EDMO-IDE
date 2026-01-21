@@ -29,7 +29,10 @@ export function getServoIndexFromLetter(letter: string): number {
   return upperLetter.charCodeAt(0) - 65; // A=0, B=1, C=2, ...
 }
 
-export function getServoColor(index: number): string {
+export function getServoColor(index: number, configColor?: string): string {
+  if (configColor) {
+    return configColor;
+  }
   return SERVO_COLORS[index % SERVO_COLORS.length];
 }
 
