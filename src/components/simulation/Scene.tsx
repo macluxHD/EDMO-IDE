@@ -266,10 +266,12 @@ function Scene({ parts, container }: SceneProps) {
         // Oscillator formula: angle = amplitude * sin(2π * frequency * t + phaseShift) + offset
         const angle =
           osc.amplitude *
-            Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
+          Math.sin(2 * Math.PI * osc.frequency * t + osc.phaseShift) +
           osc.offset;
 
-        const clampedAngle = THREE.MathUtils.clamp(angle, -90, 90);
+        // map 0 to 180 degrees to -90 to 90
+        const mappedAngle = angle - 90;
+        const clampedAngle = THREE.MathUtils.clamp(mappedAngle, -90, 90);
         const flipMultiplier = part.flip ? -1 : 1;
         const rad = THREE.MathUtils.degToRad(clampedAngle) * flipMultiplier;
 
